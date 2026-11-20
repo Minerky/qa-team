@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+qa-credentials.local.json
+~$*.docx
+.playwright-mcp/

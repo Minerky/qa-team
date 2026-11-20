@@ -1,0 +1,41 @@
+QA TEAM - satu repo untuk agent + skill
+=======================================
+
+Struktur
+--------
+agents\                 4 agent OpenCode (qa-lead, qa-engineer, bug-hunter, sp-specialist)
+skills\qa-e2e-tester\   skill QA E2E
+skills\bug-hunter\      skill bug hunting
+skills\sp-tracer\       skill pelacakan notifikasi ke stored procedure
+qa-credentials.example.json  template koneksi DB (kosong, aman di-commit)
+setup.ps1               menyalin agent & skill ke lokasi yang dibaca OpenCode
+
+Pasang di laptop baru (Windows)
+-------------------------------
+1. git clone https://github.com/Minerky/qa-team.git
+2. cd qa-team
+3. powershell -ExecutionPolicy Bypass -File .\setup.ps1
+4. opencode reload
+5. Di chat: @qa-lead
+
+Yang dilakukan setup.ps1:
+- menyalin agents\*.md ke ~/.config/opencode/agents/
+- menyalin skills\<id>\ ke ~/.config/opencode/skills/<id>/
+- membuat ~/.config/opencode/qa-credentials.local.json bila belum ada
+
+Dependensi Python
+-----------------
+python -m pip install python-docx pillow pyodbc playwright openpyxl
+python -m playwright install chromium
+
+Kredensial
+----------
+Isi ~/.config/opencode/qa-credentials.local.json (petunjuk ada di dalam file).
+Jangan pernah menaruh password di chat, di spec, atau di laporan DOCX.
+File .local.json tidak ikut ke Git.
+
+Aturan penting
+--------------
+- Nama folder skill = ID skill. Jangan mengubah qa-e2e-tester, bug-hunter, sp-tracer.
+- File .md di root folder agents = agent. Jangan menaruh README.md di sana.
+- Untuk update: git pull, lalu jalankan setup.ps1 lagi.
