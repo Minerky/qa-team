@@ -1,6 +1,6 @@
 # QA Team
 
-Satu repo untuk tim QA & security OpenCode: **5 agent + 5 skill**. Clone repo ini, jalankan `setup.ps1`, maka tim langsung siap dipanggil di chat OpenCode.
+Satu repo untuk tim QA & security OpenCode: **5 agent + 6 skill**. Clone repo ini, jalankan `setup.ps1`, maka tim langsung siap dipanggil di chat OpenCode.
 
 Tim ini menghasilkan laporan audit-ready (DOCX) dengan bukti sungguhan — screenshot beranotasi merah, video asli, dan Bab **Kesimpulan** yang wajib ada.
 
@@ -14,10 +14,11 @@ qa-team/
 │   ├── qa-mobile-engineer.md        E2E Android (AVD/ADB, Test Mode, video)
 │   ├── bug-hunter.md                pentest berotorisasi
 │   └── sp-specialist.md             notifikasi → stored procedure
-├── skills/                          ← 5 skill (nama folder = ID skill)
+├── skills/                          ← 6 skill (nama folder = ID skill)
 │   ├── qa-e2e-tester/               CORE: aturan bersama + generator DOCX
 │   ├── qa-web-e2e/                  protokol eksekusi web
 │   ├── qa-mobile-e2e/               protokol eksekusi Android
+│   ├── firerpa-eval/                referensi evaluasi/training FIRERPA lamda
 │   ├── bug-hunter/                  WAF/API/mobile testing, CVSS, kill chain
 │   └── sp-tracer/                   pelacakan SP lewat SELECT katalog
 ├── qa-credentials.example.json      template DB kosong, aman di-commit
@@ -60,7 +61,7 @@ Verifikasi cepat setelah `opencode reload` (kadang perlu dicek ulang sekali kare
 
 ```
 opencode api get /api/agent     → qa-lead, qa-web-engineer, qa-mobile-engineer, bug-hunter, sp-specialist
-opencode api get /api/skill     → qa-e2e-tester, qa-web-e2e, qa-mobile-e2e, bug-hunter, sp-tracer
+opencode api get /api/skill     → qa-e2e-tester, qa-web-e2e, qa-mobile-e2e, firerpa-eval, bug-hunter, sp-tracer
 ```
 
 ### Dependensi Python
@@ -102,6 +103,20 @@ Input yang sebaiknya disertakan untuk bug hunt: **otorisasi tertulis**, target (
 
 Mode `--watch` membuka browser Playwright yang terlihat, `watch-dashboard.html`, dan diff engine untuk memantau perubahan.
 
+## Evaluasi referensi FIRERPA / lamda
+
+`@qa-lead` memuat skill `firerpa-eval` untuk **training & evaluasi**, bukan untuk menjalankan alat. Isinya: pemetaan kapabilitas dari dokumentasi publik GitHub (`github.com/firerpa/lamda`, MIT), gap analysis terhadap qa-team, dan checklist pilot sebelum adopsi.
+
+Statusnya sengaja: **DIPELAJARI · BELUM DIINSTALL · BELUM DIPILOTKAN**. Jadi:
+
+```
+@qa-lead
+Evaluasi FIRERPA/lamda untuk training tim. Jangan install atau jalankan apa pun —
+ baru pemetaan kapabilitas dan checklist pilot.
+```
+
+Kalau diminta mengimplementasikan MITM/Frida/device farm, lead menjawab `BLOCKED` sampai ada approval tertulis, mesin laboratorium, dan pilot yang lulus. Tidak ada klaim benchmark atau angka efisiensi. Evaluasi ini masuk slide training PPTX, bukan `triage.json` E2E.
+
 ## Kredensial & keamanan
 
 - Isi `~/.config/opencode/qa-credentials.local.json` (salinan dari template). **Jangan pernah isi password di `qa-credentials.example.json`.**
@@ -132,6 +147,7 @@ Opsi: `--text` (wajib), `--server`, `--database`, `--windows`, `--limit`, `--out
 9. Hasil `FAIL` / `ERROR` / DB tidak terjangkau dilaporkan apa adanya sebagai temuan atau `BLOCKED` — tidak dibungkus "aman".
 10. Presentasi manajer memakai bahasa profesional (quality & evidence automation). **Dilarang mengarang angka efisiensi.**
 11. Aturan inti ada di `qa-e2e-tester`; skill domain tidak boleh mengubahnya.
+12. `firerpa-eval` **hanya evaluasi referensi**: tidak menjalankan MITM/Frida/root, tidak mengklaim benchmark, dan tidak menggantikan guardrail.
 
 ## Artefak yang dihasilkan
 
@@ -157,7 +173,7 @@ opencode reload
 
 ## Catatan penting
 
-- **Nama folder skill adalah ID skill.** Jangan ubah `qa-e2e-tester`, `qa-web-e2e`, `qa-mobile-e2e`, `bug-hunter`, `sp-tracer`.
+- **Nama folder skill adalah ID skill.** Jangan ubah `qa-e2e-tester`, `qa-web-e2e`, `qa-mobile-e2e`, `firerpa-eval`, `bug-hunter`, `sp-tracer`.
 - **Setiap `.md` di root `agents/` menjadi agent.** Jangan menaruh `README.md` di folder itu.
 - `sp-tracer` adalah nama folder/skill; repositori lamanya bernama `sp-tracking`.
 - DB belum terjangkau → `sp-specialist` akan menjawab `BLOCKED` dan meminta **nama instance / akses jaringan**, bukan password.

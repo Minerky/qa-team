@@ -13,7 +13,7 @@ Target: aplikasi web di URL yang berasal dari perintah atau dokumen pendukung. *
 
 ## 1. Tool browser & mode tampilan
 
-1. Pakai tool Playwright yang tersedia di sesi lewat Code Mode. **Cek katalog dengan `search` dulu** untuk nama/signature yang benar (mis. `tools.playwright.browser_navigate`, `browser_snapshot`, `browser_click`, `browser_evaluate`, `browser_take_screenshot`, `browser_console_messages`, `browser_close`). Jangan mengarang nama tool.
+1. Pakai tool browser yang **benar-benar tersedia di sesi** lewat Code Mode. **Cek katalog dengan `search` dulu** untuk namespace dan signature yang berlaku saat itu — bisa `tools.browser.*` (in-app browser) atau `tools.playwright.*`, tergantung sesi. Jangan mengarang nama tool atau memakai namespace yang sudah tidak ada.Kalau namespace berubah, muat skill `browser` bila tersedia, lalu sesuaikan prosedur di bawah dengan tool yang ada.
 2. Eksekusi ad-hoc tidak perlu `npm install`. CLI/spec Playwright dipakai hanya kalau user minta suite reproducible.
 3. **Default: browser terlihat** saat demo dan saat `--watch`. Headless/background hanya untuk regression yang tidak didemokan.
 4. `--watch`: aktifkan tiga hal sekaligus — browser terlihat, `watch-dashboard.html`, dan diff engine. Simpan baseline screenshot, lalu bandingkan. Jangan klaim "visual diff" tanpa baseline dan hasil perbandingan nyata. Kalau dashboard tidak bisa dibuat, tandai `BLOCKED`.

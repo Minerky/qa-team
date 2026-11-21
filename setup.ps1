@@ -22,7 +22,7 @@ if (Test-Path $retiredAgent) {
 }
 
 # 2. Skill: nama folder = ID skill, jangan diubah
-foreach ($id in 'qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'bug-hunter', 'sp-tracer') {
+foreach ($id in 'qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'firerpa-eval', 'bug-hunter', 'sp-tracer') {
     $src = Join-Path (Join-Path $repo 'skills') $id
     $dst = Join-Path $skillsDst $id
     New-Item -ItemType Directory -Force -Path $dst | Out-Null

@@ -12,6 +12,7 @@ agents\                        5 agent OpenCode
 skills\qa-e2e-tester\          CORE: aturan bersama + generator DOCX
 skills\qa-web-e2e\             protokol eksekusi web
 skills\qa-mobile-e2e\          protokol eksekusi Android
+skills\firerpa-eval\           referensi evaluasi/training FIRERPA lamda
 skills\bug-hunter\             skill bug hunting
 skills\sp-tracer\              skill pelacakan notifikasi ke SP
 qa-credentials.example.json    template koneksi DB (kosong, aman di-commit)
@@ -23,6 +24,13 @@ qa-e2e-tester tetap satu core untuk aturan bersama: intake, kredensial,
 guardrail, format temuan, anotasi merah, verifikasi DB, generator DOCX.
 Protokol teknis dipisah: qa-web-e2e untuk web, qa-mobile-e2e untuk Android.
 Agent qa-engineer lama sudah diganti qa-web-engineer + qa-mobile-engineer.
+
+Evaluasi FIRERPA
+----------------
+Skill firerpa-eval HANYA referensi/training untuk qa-lead. Status:
+DIPELAJARI, BELUM DIINSTALL, BELUM DIPILOTKAN. Tidak menjalankan MITM,
+Frida, root, atau device farm. Tidak ada klaim benchmark. Eksekusi baru
+boleh setelah approval tertulis + pilot UAT.
 
 Pasang di laptop baru (Windows)
 -------------------------------
@@ -55,7 +63,7 @@ File .local.json tidak ikut ke Git.
 Aturan penting
 --------------
 - Nama folder skill = ID skill. Jangan mengubah qa-e2e-tester, qa-web-e2e,
-  qa-mobile-e2e, bug-hunter, sp-tracer.
+  qa-mobile-e2e, firerpa-eval, bug-hunter, sp-tracer.
 - File .md di root folder agents = agent. Jangan menaruh README.md di sana.
 - e2e all: web tulis triage.web.json, mobile tulis triage.mobile.json,
   qa-lead menggabungkan jadi satu triage.json dan satu DOCX.
