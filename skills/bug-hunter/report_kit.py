@@ -33,6 +33,15 @@ SEV_RGB = {'CRITICAL': RGBColor(0xB0,0x00,0x00), 'HIGH': RGBColor(0xC0,0x50,0x00
            'MEDIUM': RGBColor(0x8A,0x6D,0x00), 'LOW': RGBColor(0x33,0x66,0x33),
            'INFO': RGBColor(0x2B,0x5B,0x84)}
 
+# Target SLA default dari SOP-QA.md §5. Bisa dioverride lewat governance.sla di triage.json.
+DEFAULT_SLA = {
+    'CRITICAL': {'response': '1 hari kerja', 'fix': '3 hari kerja'},
+    'HIGH': {'response': '2 hari kerja', 'fix': '7 hari kerja'},
+    'MEDIUM': {'response': '3 hari kerja', 'fix': '30 hari kerja'},
+    'LOW': {'response': '5 hari kerja', 'fix': 'sprint berikutnya'},
+    'INFO': {'response': '5 hari kerja', 'fix': 'backlog'},
+}
+
 _FULL = ['cover','executive','scope','method','environment',
          'waf_analysis','recon','subdomain_takeover',
          'jwt_analysis','oauth_analysis','twofa_analysis',
@@ -212,6 +221,12 @@ def norm_findings(triage):
             'steps': f.get('steps') or f.get('poc_steps') or [],
             'poc_snippet': f.get('poc_snippet', ''),
             'chain': f.get('chain') or [], 'evidence': ev, 'confidence': f.get('confidence', '-'),
+            'owner': f.get('owner') or f.get('assignee') or '-',
+            'ticket': f.get('ticket') or f.get('linked_ticket') or '-',
+            'defect_status': f.get('defect_status') or '-',
+            'sla_due': f.get('sla_due') or '-',
+            'requirement': f.get('requirement') or f.get('requirement_id') or '-',
+            'retest_of': f.get('retest_of') or '-',
             'shots': shots,
         })
     return out
@@ -912,6 +927,12 @@ class Report:
             self.P('Aktual: ' + str(f['actual']))
             if f['business']: self.P('Dampak Bisnis & Keamanan: ' + str(f['business']))
             self.P('Rekomendasi Remediasi: ' + str(f['recommendation']))
+            track = (f"Tindak lanjut: Owner={f['owner']}; Tiket={f['ticket']}; "
+                     f"Status defect={f['defect_status']}; SLA={f['sla_due']}; "
+                     f"Requirement={f['requirement']}")
+            if f['retest_of'] != '-':
+                track += f"; Uji ulang dari={f['retest_of']}"
+            self.P(track, italic=True)
             if f['evidence']:
                 self.P('Bukti: ' + '; '.join(map(str, f['evidence'])) +
                        (f" (keyakinan: {f['confidence']})" if f['confidence'] != '-' else ''), italic=True)
@@ -963,7 +984,8 @@ class Report:
     def risk(self):
         self.P('Skor Risiko = Likelihood × Impact (1–5). Band: 20–25 Critical, 12–19 High, 6–11 Medium, 1–5 Low.', italic=True)
         rows = [[f['id'], f['title'][:50], str(f['likelihood']), str(f['impact_score']),
-                 str(f['score']), f.get('owner','tidak ditetapkan'), str(f['recommendation'])[:88], f['status']]
+                 str(f['score']), f['owner'] if f['owner'] != '-' else 'tidak ditetapkan',
+                 str(f['recommendation'])[:88], f['status']]
                 for f in self._findings]
         self.table(['ID', 'Kerentanan', 'L', 'I', 'Skor', 'Owner', 'Rencana Mitigasi', 'Status'], rows,
                    widths=[0.65, 1.75, 0.3, 0.3, 0.45, 0.65, 2.0, 0.8], score_col=4)
@@ -1041,6 +1063,44 @@ class Report:
         if self.cfg.get('limit_note'): self.P(self.cfg['limit_note'], bold=True)
         self.blocks(self.cfg.get('limits_blocks', []))
 
+    def governance(self):
+        """Otorisasi, sign-off, SLA, dan status tindak lanjut (SOP-QA.md)."""
+        g = self.triage.get('governance', {}) or {}
+        auth = g.get('authorization', {}) or {}
+        sign = g.get('signoff', {}) or {}
+        self.H('Tata Kelola & Tindak Lanjut', 2)
+        rows = [
+            ['Referensi otorisasi', str(auth.get('ref', '-'))],
+            ['Scope otorisasi', str(auth.get('scope', '-'))],
+            ['Otorisasi disetujui oleh', str(auth.get('approved_by', '-'))],
+            ['Tanggal otorisasi', str(auth.get('date', '-'))],
+            ['Berlaku sampai', str(auth.get('valid_until', '-'))],
+            ['Keputusan rilis', str(sign.get('decision', '-'))],
+            ['Sign-off oleh', str(sign.get('approved_by', '-'))],
+            ['Tanggal sign-off', str(sign.get('date', '-'))],
+        ]
+        rows = [r for r in rows if str(r[1]) not in ('-', '', 'None')]
+        if rows:
+            self.table(['Aspek', 'Nilai'], rows, widths=[2.1, 4.5])
+        else:
+            self.P('Data otorisasi/sign-off belum diisi di `governance` — baca sebagai menunggu sign-off.',
+                   italic=True)
+
+        if self._findings:
+            self.H('Status Tindak Lanjut Temuan', 3)
+            rows2 = [[f['id'], f['owner'], f['ticket'], f['defect_status'],
+                      f['sla_due'], f['requirement']] for f in self._findings]
+            self.table(['ID', 'Owner', 'Tiket', 'Status Defect', 'SLA', 'Requirement'], rows2,
+                       widths=[0.7, 1.0, 1.0, 1.1, 1.0, 1.8])
+
+        sla = g.get('sla') or DEFAULT_SLA
+        self.H('SLA Penanganan', 3)
+        self.table(['Severity', 'Respons', 'Target perbaikan'],
+                   [[k, str(v.get('response', '-')), str(v.get('fix', '-'))] for k, v in sla.items()],
+                   widths=[1.2, 2.3, 2.4])
+        for note in (g.get('notes') or []):
+            self.bullet(str(note))
+
     def conclusion(self):
         tr = self.triage
         s = tr.get('summary', {}) or {}
@@ -1106,6 +1166,7 @@ class Report:
                         self.P(f"{label}: {v}")
             elif isinstance(custom, list):
                 for x in custom: self.bullet(str(x))
+        self.governance()
         self.blocks(self.cfg.get('conclusion_blocks', []))
 
     def appendix_cases(self):

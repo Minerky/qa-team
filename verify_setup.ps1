@@ -3,6 +3,7 @@
 $ErrorActionPreference = 'Continue'
 
 $oc = Join-Path $env:USERPROFILE '.config\opencode'
+$repo = Split-Path -Parent $MyInvocation.MyCommand.Path
 $expectedAgents = @('qa-lead', 'qa-web-engineer', 'qa-mobile-engineer', 'bug-hunter', 'sp-specialist')
 $expectedSkills = @('qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'firerpa-eval', 'bug-hunter', 'sp-tracer')
 $modules = [ordered]@{
@@ -87,6 +88,12 @@ foreach ($s in $scriptMap.Keys) {
     }
 }
 if ($scriptOk -eq $scriptTotal) { Show-Line '[OK]' 'skrip skill' "$scriptOk/$scriptTotal tersedia" }
+
+# 6c. Dokumen tata kelola (SOP + template otorisasi)
+foreach ($doc in 'SOP-QA.md', 'templates\authorization.md') {
+    if (Test-Path (Join-Path $repo $doc)) { Show-Line '[OK]' "dokumen $doc" 'ada' }
+    else { Show-Line '[WARN]' "dokumen $doc" 'tidak ada - jalankan git pull' }
+}
 
 # 7. File kredensial lokal (isi TIDAK dibaca)
 $cred = Join-Path $oc 'qa-credentials.local.json'

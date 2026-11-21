@@ -19,6 +19,7 @@ Instruksi untuk agent ada di `SKILL.md` masing-masing. Panduan ini tidak menguba
 | E2E Android | [6](#6-mobile-e2e) | `@qa-lead e2e mobile` |
 | Bug hunt | [7](#7-bug-hunter) | `@qa-lead hunt web <url>` |
 | Gabung web + mobile, 1 DOCX | [8](#8-cara-pakai-sehari-hari) | `@qa-lead e2e all <url>` |
+| RACI, SLA, otorisasi, sign-off | [`SOP-QA.md`](SOP-QA.md) | salin `templates/authorization.md` |
 
 **Aturan emas yang tidak bisa dilewati:** satu DOCX final per laporan · Bab **Kesimpulan** wajib · temuan sekecil apa pun wajib masuk · tiap temuan punya urutan klik/tap + screenshot lingkaran merah berlabel · kredensial tidak pernah diminta di chat · DB read-only · `EXEC` ditolak · video mobile asli tidak dihapus · iOS/IPA `BLOCKED`.
 
@@ -473,6 +474,20 @@ python "%USERPROFILE%\.config\opencode\skills\qa-e2e-tester\build_report.py" --r
 Isi wajib DOCX: halaman judul & meta, ringkasan eksekutif, metodologi, lingkungan pengujian, temuan gabungan, risk register (tabel), daftar test case (lampiran), rekomendasi prioritas, batasan & `BLOCKED`, **Kesimpulan & Rekomendasi Akhir**, lampiran bukti.
 
 Bila temuan belum punya `shots[].highlight`, DOCX menandai *"belum dianotasi merah"* — itu berarti temuan belum selesai. Koordinat `x,y,w,h` relatif 0–1.
+
+### 9.1 Tata kelola di dalam laporan
+
+Tiap finding wajib mengisi `owner`, `ticket`, `defect_status`, `sla_due`, `requirement` (dan `retest_of` untuk uji ulang). Generator menampilkannya di Bab Temuan, Risk Register, dan Bab Kesimpulan. Isi juga blok root `governance`:
+
+```json
+"governance": {
+  "authorization": {"ref": "AUTH-...", "scope": "staging /api/*", "approved_by": "...", "date": "...", "valid_until": "..."},
+  "signoff": {"decision": "perbaikan wajib sebelum rilis", "approved_by": "...", "date": "..."},
+  "notes": []
+}
+```
+
+Tanpa otorisasi tertulis (template: `templates/authorization.md`) → pentest `BLOCKED`. Tanpa `signoff.approved_by` → DOCX terbaca **menunggu sign-off**, bukan disetujui. Detail RACI, DoR/DoD, SLA, eskalasi, dan retensi ada di `SOP-QA.md`.
 
 ---
 

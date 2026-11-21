@@ -5,6 +5,8 @@ Satu repo untuk tim QA & security OpenCode: **5 agent + 6 skill**. Clone repo in
 Tim ini menghasilkan laporan audit-ready (DOCX) dengan bukti sungguhan — screenshot beranotasi merah, video asli, dan Bab **Kesimpulan** yang wajib ada.
 
 > **Baru clone?** Ikuti [PANDUAN-LENGKAP.md](PANDUAN-LENGKAP.md) — satu panduan untuk Python/Playwright, kredensial & DB, AVD/MuMu/Appium, watch mode, bug hunt, dan generator DOCX. Cek hasil pasang dengan `powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1`.
+>
+> **Untuk manajer/lead:** [SOP-QA.md](SOP-QA.md) mengatur RACI, otorisasi tertulis, DoR/DoD, SLA temuan, sign-off rilis, dan retensi bukti. Template otorisasi ada di [templates/authorization.md](templates/authorization.md).
 
 ## Isi repo
 
@@ -27,6 +29,9 @@ qa-team/
 ├── setup.ps1                        installer agent + skill ke ~/.config/opencode
 ├── verify_setup.ps1                 preflight: Python, modul, agent, skill, ADB
 ├── PANDUAN-LENGKAP.md               panduan clone → pakai (web, mobile, DB, bug hunt)
+├── SOP-QA.md                        RACI, otorisasi, DoR/DoD, SLA, sign-off, retensi
+├── templates/
+│   └── authorization.md             template otorisasi tertulis untuk pentest
 └── .gitignore                       menjaga kredensial & output tidak ter-commit
 ```
 

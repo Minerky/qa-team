@@ -56,7 +56,13 @@ foreach ($id in 'qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'firerpa-eval', 
     }
 }
 
-# 3. Template kredensial (hanya dibuat bila belum ada)
+# 3. Dokumen tata kelola ikut terpasang supaya bisa dibaca agent dari ~/.config/opencode
+Copy-Item (Join-Path $repo 'SOP-QA.md') -Destination (Join-Path $oc 'SOP-QA.md') -Force
+$tplDst = Join-Path $oc 'templates'
+New-Item -ItemType Directory -Force -Path $tplDst | Out-Null
+Copy-Item (Join-Path $repo 'templates\authorization.md') -Destination $tplDst -Force
+
+# 4. Template kredensial (hanya dibuat bila belum ada)
 $example = Join-Path $repo 'qa-credentials.example.json'
 $local = Join-Path $oc 'qa-credentials.local.json'
 if (-not (Test-Path $local)) {

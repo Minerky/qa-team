@@ -428,6 +428,13 @@ Gunakan bila temuan keamanan perlu dibuktikan dengan data nyata tanpa mengubahny
    Tetap `SELECT` katalog, tanpa `EXEC`. Bila tidak ada target yang terjangkau → `BLOCKED`, bukan
    ditebak; yang diminta adalah nama instance/akses jaringan, **bukan password**.
 
+### §26c — Tata kelola temuan (SOP-QA.md)
+
+- Sebelum eksekusi, pastikan otorisasi tertulis ada. Pakai `%USERPROFILE%\.config\opencode\templates\authorization.md`; tanpa itu → `BLOCKED`. Aturan lengkap: `%USERPROFILE%\.config\opencode\SOP-QA.md`.
+- Setiap finding **wajib** mengisi `owner`, `ticket`, `defect_status`, `sla_due`, `requirement`, dan `retest_of` bila ini uji ulang. Status defect: `OPEN` → `ASSIGNED` → `IN_PROGRESS` → `FIXED` → `RETEST_PASS`/`REOPEN` → `CLOSED`. `BLOCKED` bukan `CLOSED`.
+- Isi blok root `governance.authorization` (`ref`, `scope`, `approved_by`, `date`, `valid_until`) dan `governance.signoff` (`decision`, `approved_by`, `date`). Generator menampilkan keduanya + SLA + tabel tindak lanjut di Bab Kesimpulan. Tanpa `approved_by`, laporan terbaca sebagai **menunggu sign-off**.
+- CRITICAL/HIGH wajib divalidasi manual oleh QA Manager/Lead sebelum ditutup. Temuan INFO/LOW tetap masuk laporan dan tetap dapat tiket.
+
 ### §27 — Watch Mode (Playwright Live Dashboard)
 
 Aktif jika perintah menyertakan `--watch [interval_menit]`:

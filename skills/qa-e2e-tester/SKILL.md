@@ -203,6 +203,20 @@ Jangan menyensor nilai di artifact maupun DOCX. Terapkan aturan tunggal: nilai t
 
 Field minimal tiap entri: `id`, `title`, `category` (`Functional Bug` / `Security Risk` / `Network Risk`), `severity`, `location`, `likelihood`, `impact`, `risk_score`, `cvss` (opsional), `actual`, `expected`, `business_impact`, `recommendation`, `evidence[]` (path nyata), `confidence`, `chain`, `status` (`PASS`/`FAIL`/`BLOCKED`), `shots[]`.
 
+### 4.2 Tata kelola temuan (SOP-QA.md)
+
+Setiap temuan **wajib** mengisi juga field tindak lanjut: `owner`, `ticket`, `defect_status` (`OPEN`/`ASSIGNED`/`IN_PROGRESS`/`FIXED`/`RETEST_PASS`/`REOPEN`/`CLOSED`/`BLOCKED`), `sla_due` (tanggal), `requirement` (ID requirement), dan `retest_of` bila ini hasil uji ulang. Nilai tidak ada → `(...)`; jangan dikosongkan. `report_kit.py` menampilkan field ini di Bab Temuan, Risk Register, dan Bab Kesimpulan.
+
+Blok `governance` di root `triage.json` berisi `authorization` (`ref`, `scope`, `approved_by`, `date`, `valid_until`), `signoff` (`decision`, `approved_by`, `date`), `sla` (opsional; default dari SOP), dan `notes[]`. Tanpa otorisasi tertulis untuk pentest → `BLOCKED`. Tanpa `signoff.approved_by` → laporan dibaca sebagai **menunggu sign-off**, bukan disetujui. Sumber aturan: `%USERPROFILE%\.config\opencode\SOP-QA.md` (hasil install) atau `SOP-QA.md` di repo. Template otorisasi: `%USERPROFILE%\.config\opencode\templates\authorization.md`.
+
+```json
+"governance": {
+  "authorization": {"ref": "AUTH-2026-014", "scope": "staging /api/*", "approved_by": "(...)", "date": "(...)", "valid_until": "(...)"},
+  "signoff": {"decision": "perbaikan wajib sebelum rilis", "approved_by": "(...)", "date": "(...)"},
+  "notes": []
+}
+```
+
 ---
 
 ## 5. GENERASI ARTEFAK OUTPUT
