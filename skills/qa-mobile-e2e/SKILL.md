@@ -9,6 +9,17 @@ description: Protokol eksekusi QA E2E khusus Android mobile — AVD resmi sebaga
 
 Target: APK / aplikasi Android yang sudah terpasang. Serial dan package di-resolve sungguhan, jangan hardcode. **iOS / IPA `BLOCKED`** — butuh macOS + Xcode; nyatakan jelas, jangan dipaksa, jangan klaim tervalidasi.
 
+## Ringkasan 1 menit
+
+| | |
+|---|---|
+| **Peran** | Cara eksekusi di Android — aturan pelaporan tetap milik CORE |
+| **Target default** | AVD resmi Android Studio (automation); MuMu hanya demo; fisik untuk UAT |
+| **Output** | `triage.mobile.json` (ID `MOB-`), **video MP4 asli**, screenshot, logcat, dump XML |
+| **Batasan** | Test Mode DCT dulu untuk aplikasi DCT; video login→selesai tidak dihapus; iOS `BLOCKED` |
+
+**Peta isi:** 1. Lingkungan Android — 2. Pasang & siapkan app — 3. Eksekusi terlihat — 4. Coverage khusus mobile — 5. Bukti & video — 6. Pelaporan & batasan
+
 ---
 
 ## 1. Pilih lingkungan Android

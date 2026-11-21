@@ -7,6 +7,17 @@ description: Evaluasi & training FIRERPA/lamda — pemetaan kapabilitas dari dok
 
 Skill ini untuk **belajar, menilai, dan merangkum pilot terbatas** FIRERPA/lamda — bukan untuk menggantikan alur QA reguler. Dia menjawab: "apa yang ditawarkan repo itu, apa relevannya untuk PT Wisesa, apa yang sudah dibuktikan di lab, dan apa yang harus dibuktikan sebelum dipakai?"
 
+## Ringkasan 1 menit
+
+| | |
+|---|---|
+| **Status** | `DIPELAJARI · TERINSTALL DI LAB (v10.12) · PILOT TERBATAS PASS` |
+| **Yang sudah dibuktikan** | Koneksi, info device, 85 package, screenshot, buka app, hierarchy 31 node, WebUI 200 |
+| **Yang belum** | MITM/Frida/root/device farm, AVD re-pilot, perbandingan Appium, pemakaian produksi → `BLOCKED` |
+| **Batasan** | Sumber kapabilitas = dokumentasi publik; tidak ada klaim benchmark/efisiensi; guardrail CORE tetap menang |
+
+**Peta isi:** 0. Status — 1. Sumber — 2. Pemetaan kapabilitas — 3. Gap analysis — 4. Checklist pilot — 5. Cara menyampaikan — 6. Guardrail — 7. Riwayat
+
 ## 0. Status — baca ini dulu
 
 | Status | Arti |

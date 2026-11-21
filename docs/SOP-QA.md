@@ -189,8 +189,9 @@ Laporan manajemen (`build_pptx.py`) memakai angka yang sudah terverifikasi di DO
 
 | Kebutuhan | File |
 |---|---|
-| Panduan clone → pakai | `PANDUAN-LENGKAP.md` |
+| Peta tim & jalur belajar | `docs/PETA-TIM.md` |
+| Panduan clone → pakai | `docs/PANDUAN-LENGKAP.md` |
 | Template otorisasi | `templates/authorization.md` |
-| Skema & contoh field `triage.json` | `SOP-QA.md` §4–§7 + `skills/qa-e2e-tester/SKILL.md` |
+| Skema & contoh field `triage.json` | `docs/SOP-QA.md` §4–§7 + `skills/qa-e2e-tester/SKILL.md` |
 | Generator DOCX + verifier | `skills/qa-e2e-tester/build_report.py`, `report_kit.py` |
-| Preflight instalasi | `verify_setup.ps1` |
+| Instalasi & preflight | `scripts/setup.ps1`, `scripts/verify_setup.ps1` |

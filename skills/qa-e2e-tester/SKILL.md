@@ -14,9 +14,23 @@ Skill ini adalah **kulit aturan**, bukan protokol eksekusi. Isinya berlaku untuk
 
 **Aturan di sini selalu menang** bila ada kontradiksi dengan skill domain. Jangan jalankan E2E hanya dengan core — muat salah satu skill domain lebih dulu. Pengecualian: `@qa-lead` boleh memakai core saja untuk **menggabungkan** hasil `e2e all` menjadi satu DOCX.
 
+## Ringkasan 1 menit
+
+| | |
+|---|---|
+| **Peran** | Kulit aturan bersama untuk web **dan** mobile — bukan protokol eksekusi |
+| **Wajib dipasangkan** | `qa-web-e2e` atau `qa-mobile-e2e` (kecuali lead sedang menggabung `e2e all`) |
+| **Source of truth** | `pendukung/ai/triage.json` |
+| **Output** | Satu DOCX dengan Bab Kesimpulan + inventaris bukti |
+| **Batasan emas** | Satu laporan · semua temuan masuk · `BLOCKED` lebih jujur dari "lolos" · kredensial lokal · DB read-only |
+
+## Peta isi
+
+1. Aturan pelaporan — 2. Perintah & routing — 3. Guardrail — 4. Prinsip exhaustive — 5. Input pengujian — 6. Protokol lintas domain — 7. Format temuan & `triage.json` — 8. Generator DOCX — 9. Riwayat
+
 ---
 
-## 0.1 Aturan pelaporan — satu laporan, satu source of truth
+## 1. Aturan pelaporan — satu laporan, satu source of truth
 
 - Semua disiplin (functional, web, mobile, API, security, network, performance) masuk **SATU** `Laporan-[TARGET]-v[VER]-[TANGGAL].docx`.
 - Jangan membuat `laporan-pentest.docx`, `network-assessment.docx`, `performance-baseline.xlsx`, atau DOCX per disiplin.
@@ -24,11 +38,11 @@ Skill ini adalah **kulit aturan**, bukan protokol eksekusi. Isinya berlaku untuk
 - **Bab Kesimpulan & Rekomendasi Akhir wajib** ada.
 - **Temuan sekecil apa pun tidak boleh lolos dari report** — INFO/LOW/cosmetic/typo tetap lengkap.
 
-> Instalasi di laptop baru ada di `PANDUAN-LENGKAP.md` dan `README.md` repo `qa-team` — dibaca manusia, bukan instruksi agent.
+> Peta tim ada di `docs/PETA-TIM.md`; instalasi di laptop baru ada di `docs/PANDUAN-LENGKAP.md` dan `README.md` repo `qa-team` — dibaca manusia, bukan instruksi agent.
 
 ---
 
-## 0.2 Perintah & routing
+## 2. Perintah & routing
 
 | Perintah | Agent | Skill domain |
 |---|---|---|
@@ -69,18 +83,18 @@ Jalankan tanpa menunggu instruksi per langkah:
 
 ---
 
-## 0. GUARDRAIL WAJIB (LEGAL & SAFETY)
+## 3. GUARDRAIL WAJIB (LEGAL & SAFETY)
 
 - **Izin tertulis**: Jalankan pentest/scan HANYA pada target milik sendiri atau yang memiliki authorization/scope tertulis (URL, IP, hostname, APK/IPA, akun uji). Jika tidak ada izin, berhenti dan minta konfirmasi.
 - **Batasi scope**: Tidak boleh memindai host di luar daftar yang disetujui. Tidak boleh melakukan eksploitasi destruktif, DDoS, ransomware, defacement, atau penghapusan data produksi.
 - **Mode aman default**: Gunakan probe deteksi (payload non-destruktif, scan pasif/ringan, validasi header/konfigurasi). Eksploitasi aktif hanya boleh setelah user menyetujui langkah dan tersedia backup/rollback.
-- **Data sensitif**: ikuti **Aturan kredensial — SATU versi** di §0.2. Redaction wajib diterapkan ke DOCX, log, dan artifact.
+- **Data sensitif**: ikuti **Aturan kredensial — SATU versi** di §2. Nilai yang tersedia ditampilkan apa adanya di laporan internal; yang tidak ada ditulis `(...)`. Jangan pakai marker `[REDACTED]`, dan jangan menulis kredensial ke chat atau log runtime.
 - **Production gate**: Jika target adalah produksi dan ada risiko outage/perubahan data, minta approval eksplisit sebelum aksi yang mengubah state.
 - **Audit trail**: Setiap aksi tercatat di `hasil-test/ai/audit-log.jsonl` (waktu, target, tool, hasil, keputusan).
 
 ---
 
-## 1. PRINSIP UTAMA: EXHAUSTIVE & GRANULAR TESTING
+## 4. PRINSIP UTAMA: EXHAUSTIVE & GRANULAR TESTING
 
 1. **Target Interactivity Coverage** (yang tidak bisa diuji → `BLOCKED`, bukan dilewati): semua tombol (primer, sekunder, ikon kecil, tambah/hapus/unduh/ekspor), semua input, semua tab/accordion/panel tersembunyi wajib dicoba.
 2. **Validasi & probe keamanan**: blank submission, boundary (0, 1, max, max+1, minus, desimal, format email/telepon salah), anti-duplikasi, masking/regex, serta payload non-destruktif XSS/SQLi/path traversal pada semua field.
@@ -93,7 +107,7 @@ Detail teknis per platform ada di `qa-web-e2e` dan `qa-mobile-e2e`.
 
 ---
 
-## 2. DUKUNGAN INPUT PENGUJIAN
+## 5. DUKUNGAN INPUT PENGUJIAN
 
 | Mode | Input user | Peran & alur QA |
 |---|---|---|
@@ -108,7 +122,7 @@ Untuk Mode 5 dan Mode 6, **guardrail bagian 0 wajib** dipenuhi sebelum eksekusi.
 
 ---
 
-## 3. PROTOKOL LINTAS DOMAIN
+## 6. PROTOKOL LINTAS DOMAIN
 
 ### A. API (web & mobile)
 
@@ -140,7 +154,7 @@ Prasyarat: daftar IP/host/CIDR + izin tertulis.
 
 ---
 
-## 4. STANDAR FORMAT TEMUAN & ATRIBUT DEFECT REPORTING
+## 7. STANDAR FORMAT TEMUAN & ATRIBUT DEFECT REPORTING
 
 - 🔴 **HIGH / CRITICAL**: error sistem, 500, SQLi/XSS, data loss, RBAC bypass, secret terekspos, layanan kritis terekspos.
 - 🟡 **MEDIUM**: validasi lolos data invalid, duplikasi, logic error, overlay crash, misconfig TLS/cookie/header, yellow screen.
@@ -188,7 +202,7 @@ Template detail bug wajib:
 
 Gunakan bila temuan atau alur uji punya **state di database**. Ini melengkapi `UI → API → jaringan → penyimpanan → log`.
 
-1. **Koneksi dari file kredensial lokal** — prioritas: `QA_CREDENTIALS_FILE` → `%USERPROFILE%\.config\opencode\qa-credentials.local.json` → `qa-credentials.local.json` di folder skill. Repo menyimpan **`qa-credentials.example.json`** (template kosong, aman di-commit). Setelah clone: `copy qa-credentials.example.json qa-credentials.local.json`, lalu isi file `.local.json` — nama itu sudah masuk `.gitignore`. Blok `db` berisi `sqlite` / `server` / `database` / `user` / `password` / `auth` / `driver` / `limit`. Environment variable (`QA_DB_SQLITE`, `QA_DB_SERVER`, `QA_DB_NAME`, `QA_DB_USER`, `QA_DB_PASS`, `QA_DB_AUTH`, ...) tetap lebih prioritas. Kredensial **tidak pernah** ditulis di chat/spec/DOCX.
+1. **Koneksi dari file kredensial lokal** — prioritas: `QA_CREDENTIALS_FILE` → `%USERPROFILE%\.config\opencode\qa-credentials.local.json` → `qa-credentials.local.json` di folder skill. Repo menyimpan **`config/qa-credentials.example.json`** (template kosong, aman di-commit). Setelah clone: `copy config\qa-credentials.example.json qa-credentials.local.json`, lalu isi file `.local.json` — nama itu sudah masuk `.gitignore`. Blok `db` berisi `sqlite` / `server` / `database` / `user` / `password` / `auth` / `driver` / `limit`. Environment variable (`QA_DB_SQLITE`, `QA_DB_SERVER`, `QA_DB_NAME`, `QA_DB_USER`, `QA_DB_PASS`, `QA_DB_AUTH`, ...) tetap lebih prioritas. Kredensial **tidak pernah** ditulis di chat/spec/DOCX.
 2. **Jalankan** `python db_verify.py --checks <file-json> --out pendukung/ai/db-verification.json`.
 3. **Read-only keras** — hanya `SELECT` / `WITH` / `PRAGMA`, satu statement per check. `db_verify.py` menolak `INSERT`/`UPDATE`/`DELETE`/`DROP` dan multi-statement.
 4. **Tambahkan bab ke DOCX** — masukkan `"db_verification"` ke `report.chapters` di `triage.json`.
@@ -197,19 +211,19 @@ Gunakan bila temuan atau alur uji punya **state di database**. Ini melengkapi `U
 7. **Stored procedure — baca definisi, jangan eksekusi.** SQL Server: kunci `sp` exact/wildcard/schema, `definition_contains`, `definition_all`, `contains_all`, `offset`/`limit`, `total_matching`. `db_verify.py` menerjemahkan ke `SELECT` katalog `sys.sql_modules`/`sys.objects` dengan parameter binding. **`EXEC` tidak didukung** karena isi prosedur bisa mengubah data.
 8. **Lacak notifikasi → SP tanpa mengisi kredensial.** `python find_notif.py --text "<notifikasi>"` mencari target dari file kredensial → connection string di `appsettings*.json` / `web.config` / `.env` / `docker-compose*.yml` → instance lokal. Windows Integrated Auth dipakai bila tanpa password. Hanya nama server/database yang diekstrak. Output `pendukung/ai/sp-notif-search.json`. Tetap `SELECT` katalog. Tidak ada target → `BLOCKED`, bukan ditebak.
 
-### 4.1 Skema `triage.json`
+### 7.1 Skema `triage.json`
 
 Jangan menyensor nilai di artifact maupun DOCX. Terapkan aturan tunggal: nilai tersedia → ditulis apa adanya; nilai tidak ada → `(...)`, bukan `[REDACTED]`; kredensial tidak diminta di chat dan tidak ditulis ke log runtime. Verifikasi akhir memastikan tidak ada marker `[REDACTED]` di DOCX maupun `pendukung/ai/*`.
 
 Field minimal tiap entri: `id`, `title`, `category` (`Functional Bug` / `Security Risk` / `Network Risk`), `severity`, `location`, `likelihood`, `impact`, `risk_score`, `cvss` (opsional), `actual`, `expected`, `business_impact`, `recommendation`, `evidence[]` (path nyata), `confidence`, `chain`, `status` (`PASS`/`FAIL`/`BLOCKED`), `shots[]`.
 
-### 4.2 Tata kelola temuan (SOP-QA.md)
+### 7.2 Tata kelola temuan (SOP-QA.md)
 
 Setiap temuan **wajib** mengisi juga field tindak lanjut: `owner`, `ticket`, `defect_status` (`OPEN`/`ASSIGNED`/`IN_PROGRESS`/`FIXED`/`RETEST_PASS`/`REOPEN`/`CLOSED`/`BLOCKED`), `sla_due` (tanggal), `requirement` (ID dari FSD/Blueprint/SIT), `source` (nama dokumen + pasal/halaman), `spec_status` (`CONFORM`/`DEVIATION`/`UNVERIFIED`), dan `retest_of` bila ini hasil uji ulang. Nilai tidak ada → `(...)`; jangan dikosongkan. `report_kit.py` menampilkan field ini di Bab Temuan, Risk Register, dan Bab Kesimpulan.
 
 **Dokumen induk wajib.** Isi blok root `spec` (`primary_doc`, `version`, `path`, `refs[]`, `blackbox_only`) sebelum eksekusi. Prioritas acuan: **FSD → Blueprint → SIT/test script → User Guide**. Test case dan ekspektasi harus bersumber dari sana; dilarang mengarang ekspektasi lalu mengklaim "sesuai spesifikasi". Tanpa dokumen → `blackbox_only: true`, temuan berlabel hipotesis/observasi, asersi spesifikasi `BLOCKED`. `@qa-lead` menolak menggabungkan hasil yang tanpa `spec.primary_doc`.
 
-Blok `governance` di root `triage.json` berisi `authorization` (`ref`, `scope`, `approved_by`, `date`, `valid_until`), `signoff` (`decision`, `approved_by`, `date`), `sla` (opsional; default dari SOP), dan `notes[]`. Tanpa otorisasi tertulis untuk pentest → `BLOCKED`. Tanpa `signoff.approved_by` → laporan dibaca sebagai **menunggu sign-off**, bukan disetujui. Sumber aturan: `%USERPROFILE%\.config\opencode\SOP-QA.md` (hasil install) atau `SOP-QA.md` di repo. Template otorisasi: `%USERPROFILE%\.config\opencode\templates\authorization.md`.
+Blok `governance` di root `triage.json` berisi `authorization` (`ref`, `scope`, `approved_by`, `date`, `valid_until`), `signoff` (`decision`, `approved_by`, `date`), `sla` (opsional; default dari SOP), dan `notes[]`. Tanpa otorisasi tertulis untuk pentest → `BLOCKED`. Tanpa `signoff.approved_by` → laporan dibaca sebagai **menunggu sign-off**, bukan disetujui. Sumber aturan: `%USERPROFILE%\.config\opencode\SOP-QA.md` (hasil install) atau `docs/SOP-QA.md` di repo. Template otorisasi: `%USERPROFILE%\.config\opencode\templates\authorization.md`.
 
 ```json
 "governance": {
@@ -231,7 +245,7 @@ Blok `governance` di root `triage.json` berisi `authorization` (`ref`, `scope`, 
 
 ---
 
-## 5. GENERASI ARTEFAK OUTPUT
+## 8. GENERASI ARTEFAK OUTPUT
 
 Satu folder target berisi **tepat satu `.docx`** di root dan satu folder `pendukung/`:
 
@@ -249,11 +263,11 @@ hasil-test-<target>/
     automation/             ← spec Playwright/WDIO (opsional)
 ```
 
-Isi wajib DOCX: halaman judul & meta, ringkasan eksekutif + metrik, metodologi, lingkungan pengujian (**termasuk akun uji sesuai aturan §0.2**), temuan gabungan (lokasi, `L×I`, CVSS, dampak bisnis, rekomendasi, bukti), hasil functional/web/mobile/API/security/network/performance, **risk register sebagai tabel**, **daftar test case sebagai lampiran**, rekomendasi prioritas, batasan & `BLOCKED`, **bab Kesimpulan & Rekomendasi Akhir**, lampiran bukti. DOCX hanya mencatat hasil uji — **jangan sisipkan catatan pengembangan skill, status tool, atau referensi `SKILL.md`**.
+Isi wajib DOCX: halaman judul & meta, ringkasan eksekutif + metrik, metodologi, lingkungan pengujian (**termasuk akun uji sesuai aturan §2**), temuan gabungan (lokasi, `L×I`, CVSS, dampak bisnis, rekomendasi, bukti), hasil functional/web/mobile/API/security/network/performance, **risk register sebagai tabel**, **daftar test case sebagai lampiran**, rekomendasi prioritas, batasan & `BLOCKED`, **bab Kesimpulan & Rekomendasi Akhir**, lampiran bukti. DOCX hanya mencatat hasil uji — **jangan sisipkan catatan pengembangan skill, status tool, atau referensi `SKILL.md`**.
 
-Generator: `python-docx`. `openpyxl` **hanya** bila user eksplisit minta Excel terpisah. Verifikasi akhir: struktur bab lengkap, satu `.docx`, tidak ada `[REDACTED]`, nilai tersedia tampil sesuai aturan §0.2.
+Generator: `python-docx`. `openpyxl` **hanya** bila user eksplisit minta Excel terpisah. Verifikasi akhir: struktur bab lengkap, satu `.docx`, tidak ada `[REDACTED]`, nilai tersedia tampil sesuai aturan §2.
 
-### 5.1 Generator kanonik
+### 8.1 Generator kanonik
 
 Jangan menulis ulang script DOCX per target. Pakai generator di folder skill inti `qa-e2e-tester` (atau salinan lokalnya di `~/.config/opencode/skills/qa-e2e-tester/`):
 
@@ -268,7 +282,7 @@ python <folder skill qa-e2e-tester>/build_report.py --root hasil-test-<target> -
 
 ---
 
-## 6. RIWAYAT PERUBAHAN
+## 9. RIWAYAT PERUBAHAN
 
 - **Pemisahan domain (2026-11-21)**: `qa-e2e-tester` jadi CORE; protokol web pindah ke `qa-web-e2e`, protokol mobile ke `qa-mobile-e2e`; `qa-engineer` dibagi menjadi `qa-web-engineer` + `qa-mobile-engineer`.
 - Aturan kredensial disatukan satu versi; kontradiksi dihapus.

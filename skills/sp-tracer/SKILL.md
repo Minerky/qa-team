@@ -3,11 +3,22 @@ name: sp-tracer
 description: 'Lacak stored procedure penghasil notifikasi validasi dari teks notifikasi saja — baca definisi lewat SELECT katalog, tanpa EXEC, tanpa mengisi kredensial. Pakai saat ada toast/error validasi dan ingin tahu SP mana pengirimnya, field apa yang wajib diisi, serta aturan apa di dalam prosedur. Juga dipakai untuk verifikasi database read-only.'
 ---
 
-# Skill: SP Tracer
+# SP Tracer — notifikasi ke stored procedure (`sp-tracer`)
 
 Lacak **notifikasi / pesan validasi → stored procedure pengirimnya**. Yang dibaca adalah **teks definisi** prosedur, bukan eksekusinya.
 
 Bisa dipakai kapan saja — tidak harus sedang menjalankan E2E atau bug hunt.
+
+## Ringkasan 1 menit
+
+| | |
+|---|---|
+| **Input** | Teks notifikasi/toast, mis. `"Validasi gagal: area wajib diisi"` |
+| **Cara kerja** | `find_notif.py` mencari target koneksi sendiri, lalu `SELECT` katalog |
+| **Output** | `FOUND` / `NOT_FOUND` / `BLOCKED` + nama SP + nomor baris definisi + field wajib |
+| **Batasan mutlak** | Tanpa `EXEC`, DML, atau DDL. DB tak terjangkau → `BLOCKED`, jangan menebak |
+
+**Peta isi:** Kapan dipakai — Cara memanggil — Alur kerja — Banyak SP — Guardrail — Kredensial
 
 ## Kapan dipakai
 
@@ -76,4 +87,4 @@ Jalankan: `python db_verify.py --checks <file-json> --out pendukung/ai/db-verifi
 
 Prioritas: `QA_CREDENTIALS_FILE` → `%USERPROFILE%\.config\opencode\qa-credentials.local.json` → `qa-credentials.local.json` di folder skill ini. Environment variable `QA_DB_*` lebih prioritas dari file.
 
-Template kosong ada di `qa-credentials.example.json`. Salin ke `qa-credentials.local.json` lalu isi bila perlu; nama `.local.json` sudah masuk `.gitignore`, jadi tidak bisa ikut ter-commit.
+Template kosong ada di `config/qa-credentials.example.json`. Salin ke `qa-credentials.local.json` lalu isi bila perlu; nama `.local.json` sudah masuk `.gitignore`, jadi tidak bisa ikut ter-commit.

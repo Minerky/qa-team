@@ -3,7 +3,8 @@
 $ErrorActionPreference = 'Continue'
 
 $oc = Join-Path $env:USERPROFILE '.config\opencode'
-$repo = Split-Path -Parent $MyInvocation.MyCommand.Path
+# Script ini ada di scripts/, jadi root repo satu level di atasnya.
+$repo = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $expectedAgents = @('qa-lead', 'qa-web-engineer', 'qa-mobile-engineer', 'bug-hunter', 'sp-specialist')
 $expectedSkills = @('qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'firerpa-eval', 'bug-hunter', 'sp-tracer')
 $modules = [ordered]@{
@@ -60,7 +61,7 @@ else { Show-Line '[WARN]' 'playwright chromium' 'jalankan: python -m playwright 
 $agentsOk = 0
 foreach ($a in $expectedAgents) {
     if (Test-Path (Join-Path $oc "agents\$a.md")) { $agentsOk++ }
-    else { Show-Line '[WARN]' "agent $a" 'belum ada - jalankan setup.ps1' }
+    else { Show-Line '[WARN]' "agent $a" 'belum ada - jalankan scripts\setup.ps1' }
 }
 if ($agentsOk -eq $expectedAgents.Count) { Show-Line '[OK]' 'agent' "$agentsOk/$($expectedAgents.Count) terpasang" }
 
@@ -68,7 +69,7 @@ if ($agentsOk -eq $expectedAgents.Count) { Show-Line '[OK]' 'agent' "$agentsOk/$
 $skillsOk = 0
 foreach ($s in $expectedSkills) {
     if (Test-Path (Join-Path $oc "skills\$s\SKILL.md")) { $skillsOk++ }
-    else { Show-Line '[WARN]' "skill $s" 'belum ada - jalankan setup.ps1' }
+    else { Show-Line '[WARN]' "skill $s" 'belum ada - jalankan scripts\setup.ps1' }
 }
 if ($skillsOk -eq $expectedSkills.Count) { Show-Line '[OK]' 'skill' "$skillsOk/$($expectedSkills.Count) terpasang" }
 
@@ -84,13 +85,14 @@ foreach ($s in $scriptMap.Keys) {
     foreach ($f in $scriptMap[$s]) {
         $scriptTotal++
         if (Test-Path (Join-Path $oc "skills\$s\$f")) { $scriptOk++ }
-        else { Show-Line '[WARN]' "skill $s / $f" 'belum ada - jalankan setup.ps1 ulang' }
+        else { Show-Line '[WARN]' "skill $s / $f" 'belum ada - jalankan scripts\setup.ps1 ulang' }
     }
 }
 if ($scriptOk -eq $scriptTotal) { Show-Line '[OK]' 'skrip skill' "$scriptOk/$scriptTotal tersedia" }
 
-# 6c. Dokumen tata kelola (SOP + template otorisasi)
-foreach ($doc in 'SOP-QA.md', 'templates\authorization.md') {
+# 6c. Dokumen & konfigurasi yang ikut terpasang
+foreach ($doc in 'docs\PETA-TIM.md', 'docs\PANDUAN-LENGKAP.md', 'docs\SOP-QA.md',
+                'templates\authorization.md', 'config\qa-credentials.example.json', 'config\.env.qa.example') {
     if (Test-Path (Join-Path $repo $doc)) { Show-Line '[OK]' "dokumen $doc" 'ada' }
     else { Show-Line '[WARN]' "dokumen $doc" 'tidak ada - jalankan git pull' }
 }
@@ -98,7 +100,7 @@ foreach ($doc in 'SOP-QA.md', 'templates\authorization.md') {
 # 7. File kredensial lokal (isi TIDAK dibaca)
 $cred = Join-Path $oc 'qa-credentials.local.json'
 if (Test-Path $cred) { Show-Line '[OK]' 'qa-credentials.local.json' 'ada (isi tidak dicek)' }
-else { Show-Line '[WARN]' 'qa-credentials.local.json' 'belum ada - jalankan setup.ps1' }
+else { Show-Line '[WARN]' 'qa-credentials.local.json' 'belum ada - jalankan scripts\setup.ps1' }
 
 # 8. ADB / device
 $adb = ''
@@ -122,7 +124,7 @@ Write-Host '1. opencode reload, lalu cek dari folder workspace:'
 Write-Host '   opencode api get /api/agent'
 Write-Host '   opencode api get /api/skill'
 Write-Host '2. Isi %USERPROFILE%\.config\opencode\qa-credentials.local.json bila mau pakai DB'
-Write-Host '   (jangan pernah isi password di chat atau di qa-credentials.example.json)'
+Write-Host '   (jangan pernah isi password di chat atau di config/qa-credentials.example.json)'
 Write-Host '3. Siapkan .env.qa di workspace untuk target/akun uji web & mobile'
-Write-Host '4. Baca PANDUAN-LENGKAP.md untuk prosedur web, mobile, DB, dan bug hunt'
+Write-Host '4. Baca docs/PETA-TIM.md untuk peta tim, lalu docs/PANDUAN-LENGKAP.md untuk prosedurnya'
 Write-Host ''

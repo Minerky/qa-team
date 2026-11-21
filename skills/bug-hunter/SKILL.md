@@ -3,9 +3,23 @@ name: bug-hunter
 description: 'Autonomous Bug Hunter & Vulnerability Assessor for Web & Android APK — ELITE EDITION. Covers WAF detection/bypass, subdomain brute-force, tech fingerprint, JS secret scan, JWT crack/forge, parameter fuzzing, GraphQL abuse, WebSocket probe, CVE matching, OAuth2/OIDC abuse, 2FA bypass, business logic testing, API versioning abuse, blind vulnerability detection (SQLi/SSRF/XSS via DNS canary), mobile deep link hijack, cache poisoning, subdomain takeover detection, HTTP Request Smuggling (CL.TE/TE.CL), SSTI/XXE/LFI/Prototype Pollution/Clickjacking, CORS credentialed wildcard + DNS Rebinding, Dependency Confusion supply chain, full exploit chaining with auto severity escalation, chaos/monkey testing with verified cleanup, Playwright live watch mode with diff engine, multi-platform bug bounty templates (HackerOne/Bugcrowd/generic), and ONE consolidated Word (.docx) report with PoC, CVSS, kill chain narrative. Trigger: "hunt [url|apk]", "hunt web [url]", "hunt apk [path|pkg]", "hunt --watch [interval] [url]", "bughunt <target>".'
 ---
 
-# AUTONOMOUS BUG HUNTER (`bug-hunter`) — ELITE EDITION
+# Bug Hunter — pentest berotorisasi (`bug-hunter`)
 
-Skill ini mengubah satu perintah menjadi operasi bug hunting level elite yang berjalan sendiri. User hanya memberi target; agent melakukan selebihnya: WAF bypass, JWT crack, OAuth abuse, 2FA bypass, business logic, blind vuln, cache poisoning, subdomain takeover, exploit chaining, chaos, cleanup, live diff dashboard, dan satu laporan Word terpadu.
+> **Mode: ELITE EDITION.** Otomatis, berlapis, dan berujung pada satu laporan Word.
+
+Skill ini mengubah satu perintah menjadi operasi bug hunting yang berjalan sendiri. User hanya memberi target; agent melakukan selebihnya: WAF bypass, JWT crack, OAuth abuse, 2FA bypass, business logic, blind vuln, cache poisoning, subdomain takeover, exploit chaining, chaos, cleanup, live diff dashboard, dan satu laporan Word terpadu.
+
+## Ringkasan 1 menit
+
+| | |
+|---|---|
+| **Syarat masuk** | Otorisasi tertulis masih berlaku + scope jelas. Tanpa itu → `BLOCKED`, bukan "coba sedikit" |
+| **Target** | Web / APK staging-UAT; produksi hanya regression & hunt berkala yang diizinkan |
+| **Output** | Satu DOCX: temuan + CVSS + kill chain + draft HackerOne/Bugcrowd di appendix + Bab Kesimpulan |
+| **Berhenti otomatis** | Bila ada risiko perubahan permanen pada data produksi |
+| **Dilarang** | Eksploitasi destruktif, mengarang bukti, memisah draft jadi file `.md` |
+
+**Peta isi:** 0. Alur otonom — 1. Fase detail — 2. Cara memerintahkan — 3. Guardrail & zero redaction — 4. Format `triage.json` — 5. Struktur artefak — 6. Perintah lengkap
 
 ---
 
@@ -392,8 +406,8 @@ Gunakan bila temuan keamanan perlu dibuktikan dengan data nyata tanpa mengubahny
    **read-only** dan staging/UAT terlebih dahulu; produksi hanya dengan approval eksplisit.
 2. **Koneksi dari file kredensial lokal** — prioritas: `QA_CREDENTIALS_FILE` →
    `%USERPROFILE%\.config\opencode\qa-credentials.local.json` → `qa-credentials.local.json` di folder skill.
-   Repo menyimpan **`qa-credentials.example.json`** (template kosong, aman di-commit). Setelah clone:
-   `copy qa-credentials.example.json qa-credentials.local.json`, lalu isi file `.local.json` —
+   Repo menyimpan **`config/qa-credentials.example.json`** (template kosong, aman di-commit). Setelah clone:
+   `copy config\qa-credentials.example.json qa-credentials.local.json`, lalu isi file `.local.json` —
    nama itu sudah masuk `.gitignore`, jadi password tidak bisa ikut ter-commit. Blok `db` berisi
    `sqlite` / `server` / `database` / `user` / `password` / `auth` / `driver` / `limit`.
    Environment variable (`QA_DB_SQLITE`, `QA_DB_SERVER`, `QA_DB_NAME`, `QA_DB_USER`, `QA_DB_PASS`,

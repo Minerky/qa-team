@@ -19,7 +19,8 @@ Instruksi untuk agent ada di `SKILL.md` masing-masing. Panduan ini tidak menguba
 | E2E Android | [6](#6-mobile-e2e) | `@qa-lead e2e mobile` |
 | Bug hunt | [7](#7-bug-hunter) | `@qa-lead hunt web <url>` |
 | Gabung web + mobile, 1 DOCX | [8](#8-cara-pakai-sehari-hari) | `@qa-lead e2e all <url>` |
-| RACI, SLA, otorisasi, sign-off | [`SOP-QA.md`](SOP-QA.md) | salin `templates/authorization.md` |
+| Peta tim & jalur belajar | [`PETA-TIM.md`](PETA-TIM.md) | baca 3 menit |
+| RACI, SLA, otorisasi, sign-off | [`SOP-QA.md`](SOP-QA.md) | salin [`authorization.md`](../templates/authorization.md) |
 
 **Aturan emas yang tidak bisa dilewati:** satu DOCX final per laporan · Bab **Kesimpulan** wajib · temuan sekecil apa pun wajib masuk · tiap temuan punya urutan klik/tap + screenshot lingkaran merah berlabel · kredensial tidak pernah diminta di chat · DB read-only · `EXEC` ditolak · video mobile asli tidak dihapus · iOS/IPA `BLOCKED`.
 
@@ -48,7 +49,7 @@ Instruksi untuk agent ada di `SKILL.md` masing-masing. Panduan ini tidak menguba
 | Database | Akses jaringan ke SQL Server UAT/staging **atau** file SQLite. Pakai akun read-only. ODBC driver terpasang |
 | FIRERPA (opsional) | Hanya evaluasi/training. Status: `DIPELAJARI · TERINSTALL DI LAB · PILOT TERBATAS PASS`. Tidak dipakai untuk produksi/MITM/Frida tanpa approval |
 
-Catatan portabilitas: `agents/qa-lead.md` saat ini menentukan `model: opencode/big-pickle`. Bila model itu tidak tersedia di mesin/License Anda, hapus baris `model:` tersebut sebelum menjalankan `setup.ps1`, lalu simpan perubahan lokal itu (atau ganti dengan model yang tersedia).
+Catatan portabilitas: `agents/qa-lead.md` saat ini menentukan `model: opencode/big-pickle`. Bila model itu tidak tersedia di mesin/License Anda, hapus baris `model:` tersebut sebelum menjalankan `scripts\setup.ps1`, lalu simpan perubahan lokal itu (atau ganti dengan model yang tersedia).
 
 ---
 
@@ -59,17 +60,18 @@ Jalankan dari folder tempat Anda ingin menyimpan repo:
 ```powershell
 git clone https://github.com/Minerky/qa-team.git
 cd qa-team
-powershell -ExecutionPolicy Bypass -File .\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 opencode reload
 ```
 
-`setup.ps1` melakukan:
+`scripts\setup.ps1` melakukan:
 
 - menyalin `agents\*.md` ke `%USERPROFILE%\.config\opencode\agents\`
 - menyalin keenam folder skill ke `%USERPROFILE%\.config\opencode\skills\`
-- menyalin skrip bersama (`build_report.py`, `db_verify.py`, `find_notif.py`, `qa-credentials.example.json`) dari satu salinan di repo ke folder skill yang memakainya — di repo skrip itu **tidak** diduplikasi
+- menyalin skrip bersama (`build_report.py`, `db_verify.py`, `find_notif.py`) dari satu salinan di repo ke folder skill yang memakainya — di repo skrip itu **tidak** diduplikasi
+- menyalin `docs\SOP-QA.md` ke `%USERPROFILE%\.config\opencode\SOP-QA.md` dan `templates\authorization.md` ke `%USERPROFILE%\.config\opencode\templates\`
 - menghapus agent lama `qa-engineer.md` bila masih ada
-- membuat `%USERPROFILE%\.config\opencode\qa-credentials.local.json` **hanya bila belum ada**
+- membuat `%USERPROFILE%\.config\opencode\qa-credentials.local.json` **hanya bila belum ada**, dari `config\qa-credentials.example.json`
 
 Verifikasi dari **folder workspace**, bukan dari dalam `qa-team` (API bisa mengembalikan hanya built-in bila dijalankan dari repo):
 
@@ -124,7 +126,7 @@ File nyata:
 %USERPROFILE%\.config\opencode\qa-credentials.local.json
 ```
 
-File itu **di luar repo** dan sudah masuk `.gitignore`. Template kosong di repo bernama `qa-credentials.example.json` — **jangan pernah mengisinya dengan password**, karena ikut ter-commit.
+File itu **di luar repo** dan sudah masuk `.gitignore`. Template kosong di repo bernama `config/qa-credentials.example.json` — **jangan pernah mengisinya dengan password**, karena ikut ter-commit.
 
 Urutan prioritas pembacaan:
 
@@ -498,7 +500,7 @@ Tanpa otorisasi tertulis (template: `templates/authorization.md`) → pentest `B
 Dari folder repo:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\verify_setup.ps1
 ```
 
 Skrip ini hanya mengecek keberadaan dan versi. **Tidak pernah membaca atau menampilkan isi kredensial.**
@@ -527,9 +529,9 @@ Skrip ini hanya mengecek keberadaan dan versi. **Tidak pernah membaca atau menam
 ```powershell
 cd qa-team
 git pull
-powershell -ExecutionPolicy Bypass -File .\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 opencode reload
-powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\verify_setup.ps1
 ```
 
 ---

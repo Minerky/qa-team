@@ -4,14 +4,18 @@ Satu repo untuk tim QA & security OpenCode: **5 agent + 6 skill**. Clone repo in
 
 Tim ini menghasilkan laporan audit-ready (DOCX) dengan bukti sungguhan — screenshot beranotasi merah, video asli, dan Bab **Kesimpulan** yang wajib ada.
 
-> **Baru clone?** Ikuti [PANDUAN-LENGKAP.md](PANDUAN-LENGKAP.md) — satu panduan untuk Python/Playwright, kredensial & DB, AVD/MuMu/Appium, watch mode, bug hunt, dan generator DOCX. Cek hasil pasang dengan `powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1`.
+> **Mulai di sini:** [PETA-TIM.md](docs/PETA-TIM.md) — peta 5 agent + 6 skill, alur satu perintah, dan jalur belajar 15 menit.
 >
-> **Untuk manajer/lead:** [SOP-QA.md](SOP-QA.md) mengatur RACI, otorisasi tertulis, DoR/DoD, SLA temuan, sign-off rilis, dan retensi bukti. Template otorisasi ada di [templates/authorization.md](templates/authorization.md).
+> **Baru clone?** Ikuti [PANDUAN-LENGKAP.md](docs/PANDUAN-LENGKAP.md) — satu panduan untuk Python/Playwright, kredensial & DB, AVD/MuMu/Appium, watch mode, bug hunt, dan generator DOCX. Cek hasil pasang dengan `powershell -ExecutionPolicy Bypass -File .\scripts\verify_setup.ps1`.
+>
+> **Untuk manajer/lead:** [SOP-QA.md](docs/SOP-QA.md) mengatur RACI, otorisasi tertulis, DoR/DoD, SLA temuan, sign-off rilis, dan retensi bukti. Template otorisasi ada di [templates/authorization.md](templates/authorization.md).
 
 ## Isi repo
 
 ```
 qa-team/
+├── README.md                        ← etalase repo (file ini)
+├── .gitignore                       menjaga kredensial & output tidak ter-commit
 ├── agents/                          ← 5 agent OpenCode (file .md = ID agent)
 │   ├── qa-lead.md                   koordinator, primary agent
 │   ├── qa-web-engineer.md           E2E web (Playwright, watch mode, a11y)
@@ -25,14 +29,18 @@ qa-team/
 │   ├── firerpa-eval/                referensi evaluasi/training FIRERPA lamda
 │   ├── bug-hunter/                  WAF/API/mobile testing, CVSS, kill chain
 │   └── sp-tracer/                   pelacakan SP lewat SELECT katalog
-├── qa-credentials.example.json      template DB kosong, aman di-commit (satu-satunya)
-├── setup.ps1                        installer agent + skill ke ~/.config/opencode
-├── verify_setup.ps1                 preflight: Python, modul, agent, skill, ADB
-├── PANDUAN-LENGKAP.md               panduan clone → pakai (web, mobile, DB, bug hunt)
-├── SOP-QA.md                        RACI, otorisasi, DoR/DoD, SLA, sign-off, retensi
-├── templates/
-│   └── authorization.md             template otorisasi tertulis untuk pentest
-└── .gitignore                       menjaga kredensial & output tidak ter-commit
+├── docs/                            ← dibaca manusia
+│   ├── PETA-TIM.md                  peta tim, routing, jalur belajar
+│   ├── PANDUAN-LENGKAP.md           clone → pakai (web, mobile, DB, bug hunt)
+│   └── SOP-QA.md                    RACI, otorisasi, DoR/DoD, SLA, sign-off
+├── scripts/                         ← dijalankan dari terminal
+│   ├── setup.ps1                    installer agent + skill ke ~/.config/opencode
+│   └── verify_setup.ps1             preflight: Python, modul, agent, skill, ADB
+├── config/                          ← template kosong, aman di-commit
+│   ├── qa-credentials.example.json  template DB (jangan diisi password)
+│   └── .env.qa.example              template target/akun uji
+└── templates/
+    └── authorization.md             template otorisasi tertulis untuk pentest
 ```
 
 Skrip yang sama tidak disimpan berulang: `build_report.py`, `db_verify.py`, dan `find_notif.py` hanya satu salinan di `skills/qa-e2e-tester/`. `setup.ps1` yang menyalinnya ke folder skill `bug-hunter` dan `sp-tracer` saat instalasi, karena tiap skill memanggil skrip dengan nama relatif di foldernya sendiri. `report_kit.py` sengaja tetap dua versi — implementasi bug-hunter bukan substitusi CORE.
@@ -56,9 +64,9 @@ Pemisahan E2E: **`qa-e2e-tester` tetap satu core** untuk aturan bersama (intake,
 ```powershell
 git clone https://github.com/Minerky/qa-team.git
 cd qa-team
-powershell -ExecutionPolicy Bypass -File .\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 opencode reload
-powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\verify_setup.ps1
 ```
 
 Lalu di chat OpenCode:
@@ -67,7 +75,7 @@ Lalu di chat OpenCode:
 @qa-lead
 ```
 
-`setup.ps1` menyalin `agents\*.md` ke `~/.config/opencode/agents/`, menyalin `skills\<id>\` ke `~/.config/opencode/skills/<id>/`, menghapus `qa-engineer.md` lama, dan membuat `~/.config/opencode/qa-credentials.local.json` **bila belum ada**. File kredensial lokal itu sengaja di luar repo.
+`scripts\setup.ps1` menyalin `agents\*.md` ke `~/.config/opencode/agents/`, menyalin `skills\<id>\` ke `~/.config/opencode/skills/<id>/`, menghapus `qa-engineer.md` lama, menyalin `docs\SOP-QA.md` ke `~/.config/opencode/SOP-QA.md`, dan membuat `~/.config/opencode/qa-credentials.local.json` **bila belum ada** dari `config\qa-credentials.example.json`. File kredensial lokal itu sengaja di luar repo.
 
 Verifikasi cepat setelah `opencode reload` (kadang perlu dicek ulang sekali karena API bisa kosong sesaat):
 
@@ -107,7 +115,7 @@ Langsung ke spesialis:
 ```
 @qa-web-engineer e2e web https://staging.contoh.com --watch — sertakan aksesibilitas
 @qa-mobile-engineer e2e mobile — test APK di hasil-test/app.apk, rekam videonya
-@bug-hunt hunt --watch 30 https://staging.contoh.com/
+@bug-hunter hunt --watch 30 https://staging.contoh.com/
 @sp-specialist cari notifikasi: "Validasi gagal: area wajib diisi"
 ```
 
@@ -131,7 +139,7 @@ Pilot memakai **MuMu** karena binary AVD tidak tersedia di mesin ini; ini dicata
 
 ## Kredensial & keamanan
 
-- Isi `~/.config/opencode/qa-credentials.local.json` (salinan dari template). **Jangan pernah isi password di `qa-credentials.example.json`.**
+- Isi `~/.config/opencode/qa-credentials.local.json` (salinan dari template). **Jangan pernah isi password di `config/qa-credentials.example.json`.**
 - Password **tidak pernah diminta di chat**, tidak ditulis ke spec, dan tidak masuk DOCX.
 - Prioritas kredensial: `QA_CREDENTIALS_FILE` → `~/.config/opencode/qa-credentials.local.json` → file `.local.json` di folder skill. Environment `QA_DB_*` dapat meng-override.
 - SQL Server: isi `server` + `database`. Contoh `HOST\\SQLEXPRESS` (backslash dobel di JSON). Pakai `auth: "windows"` bila tanpa password. Di mesin dengan ODBC legacy, isi `driver: "SQL Server"`.
@@ -179,9 +187,9 @@ PPTX manajer bila diminta: satu file dengan DOCX tertanam dan video bukti asli.
 ```powershell
 cd qa-team
 git pull
-powershell -ExecutionPolicy Bypass -File .\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 opencode reload
-powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\verify_setup.ps1
 ```
 
 ## Catatan penting

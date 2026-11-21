@@ -1,8 +1,9 @@
 # Pasang agent + skill QA dari repo ini ke instalasi OpenCode lokal.
-# Jalankan dari mana saja:  powershell -ExecutionPolicy Bypass -File .\setup.ps1
+# Jalankan dari mana saja:  powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 
 $ErrorActionPreference = 'Stop'
-$repo = Split-Path -Parent $MyInvocation.MyCommand.Path
+# Script ini ada di scripts/, jadi root repo satu level di atasnya.
+$repo = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $oc = Join-Path $env:USERPROFILE '.config\opencode'
 $agentsDst = Join-Path $oc 'agents'
 $skillsDst = Join-Path $oc 'skills'
@@ -24,11 +25,11 @@ if (Test-Path $retiredAgent) {
 # 2. Skill: nama folder = ID skill, jangan diubah
 # Skrip yang dipakai bersama disimpan SATU kali di repo:
 #   - skills/qa-e2e-tester/  -> build_report.py, db_verify.py, find_notif.py
-#   - root repo              -> qa-credentials.example.json
+#   - config/                -> qa-credentials.example.json
 # Di sini skrip itu disalin ke folder skill pemakainya karena SKILL.md
 # memanggilnya dengan nama relatif di dalam folder skill itu sendiri.
 $core = Join-Path (Join-Path $repo 'skills') 'qa-e2e-tester'
-$credTemplate = Join-Path $repo 'qa-credentials.example.json'
+$credTemplate = Join-Path $repo 'config\qa-credentials.example.json'
 
 foreach ($id in 'qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'firerpa-eval', 'bug-hunter', 'sp-tracer') {
     $src = Join-Path (Join-Path $repo 'skills') $id
@@ -57,13 +58,13 @@ foreach ($id in 'qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'firerpa-eval', 
 }
 
 # 3. Dokumen tata kelola ikut terpasang supaya bisa dibaca agent dari ~/.config/opencode
-Copy-Item (Join-Path $repo 'SOP-QA.md') -Destination (Join-Path $oc 'SOP-QA.md') -Force
+Copy-Item (Join-Path $repo 'docs\SOP-QA.md') -Destination (Join-Path $oc 'SOP-QA.md') -Force
 $tplDst = Join-Path $oc 'templates'
 New-Item -ItemType Directory -Force -Path $tplDst | Out-Null
 Copy-Item (Join-Path $repo 'templates\authorization.md') -Destination $tplDst -Force
 
 # 4. Template kredensial (hanya dibuat bila belum ada)
-$example = Join-Path $repo 'qa-credentials.example.json'
+$example = Join-Path $repo 'config\qa-credentials.example.json'
 $local = Join-Path $oc 'qa-credentials.local.json'
 if (-not (Test-Path $local)) {
     Copy-Item $example $local
