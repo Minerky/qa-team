@@ -1,6 +1,6 @@
 # QA Team
 
-Satu repo untuk tim QA & security OpenCode: **4 agent + 3 skill**. Clone repo ini, jalankan `setup.ps1`, maka tim langsung siap dipanggil di chat OpenCode.
+Satu repo untuk tim QA & security OpenCode: **5 agent + 5 skill**. Clone repo ini, jalankan `setup.ps1`, maka tim langsung siap dipanggil di chat OpenCode.
 
 Tim ini menghasilkan laporan audit-ready (DOCX) dengan bukti sungguhan — screenshot beranotasi merah, video asli, dan Bab **Kesimpulan** yang wajib ada.
 
@@ -8,30 +8,36 @@ Tim ini menghasilkan laporan audit-ready (DOCX) dengan bukti sungguhan — scree
 
 ```
 qa-team/
-├── agents/                          ← 4 agent OpenCode (file .md = ID agent)
+├── agents/                          ← 5 agent OpenCode (file .md = ID agent)
 │   ├── qa-lead.md                   koordinator, primary agent
-│   ├── qa-engineer.md               QA E2E web + Android
+│   ├── qa-web-engineer.md           E2E web (Playwright, watch mode, a11y)
+│   ├── qa-mobile-engineer.md        E2E Android (AVD/ADB, Test Mode, video)
 │   ├── bug-hunter.md                pentest berotorisasi
 │   └── sp-specialist.md             notifikasi → stored procedure
-├── skills/                          ← 3 skill (nama folder = ID skill)
-│   ├── qa-e2e-tester/               Playwright, ADB, video, DOCX QA
-│   ├── bug-hunter/                  WAF/API/mobile testing, CVSS, kill chain, DOCX
+├── skills/                          ← 5 skill (nama folder = ID skill)
+│   ├── qa-e2e-tester/               CORE: aturan bersama + generator DOCX
+│   ├── qa-web-e2e/                  protokol eksekusi web
+│   ├── qa-mobile-e2e/               protokol eksekusi Android
+│   ├── bug-hunter/                  WAF/API/mobile testing, CVSS, kill chain
 │   └── sp-tracer/                   pelacakan SP lewat SELECT katalog
 ├── qa-credentials.example.json      template DB kosong, aman di-commit
 ├── setup.ps1                        installer agent + skill ke ~/.config/opencode
 └── Panduan.txt                      catatan singkat (cadangan README ini)
 ```
 
+Pemisahan E2E: **`qa-e2e-tester` tetap satu core** untuk aturan bersama (intake, kredensial, guardrail, format temuan, anotasi merah, verifikasi DB, generator DOCX). Protokol teknisnya dipisah menjadi `qa-web-e2e` dan `qa-mobile-e2e`. Dengan begitu, aturan tidak diduplikasi dan tidak bisa beda antar platform.
+
 ## Tim
 
 | Agent | Peran | Dipanggil untuk |
 |---|---|---|
-| `@qa-lead` | Koordinator (`primary`) | Membagi tugas ke spesialis, lalu menggabungkan hasilnya jadi satu laporan |
-| `@qa-engineer` | QA (`subagent`) | E2E web & Android APK, smoke test, bukti visual, video, DOCX QA |
+| `@qa-lead` | Koordinator (`primary`) | Membagi tugas ke 4 spesialis, lalu menggabungkan hasilnya jadi satu laporan |
+| `@qa-web-engineer` | Web QA (`subagent`) | E2E web, Playwright, `--watch`, aksesibilitas, responsif, console, API web, DOCX QA |
+| `@qa-mobile-engineer` | Mobile QA (`subagent`) | E2E Android, AVD/ADB, Test Mode DCT, Appium, video asli, logcat, DOCX QA |
 | `@bug-hunter` | Bug hunter (`subagent`) | Pentest berotorisasi, risk register, CVSS, kill chain, DOCX bug hunt |
 | `@sp-specialist` | SP (`subagent`) | Lacak pesan validasi ke stored procedure, baca definisi tanpa `EXEC` |
 
-Setiap spesialis hanya boleh memakai skillnya sendiri dan tidak bisa memanggil subagent lain. `@qa-lead` yang mengatur delegasi.
+`@qa-engineer` sudah **tidak dipakai** — perannya dibagi ke dua spesialis E2E. `setup.ps1` akan menghapus salinan lama itu otomatis. Setiap spesialis hanya boleh memakai skillnya sendiri dan tidak bisa memanggil subagent lain. `@qa-lead` yang mengatur delegasi.
 
 ## Pasang di laptop Windows
 
@@ -48,13 +54,13 @@ Lalu di chat OpenCode:
 @qa-lead
 ```
 
-`setup.ps1` menyalin `agents\*.md` ke `~/.config/opencode/agents/`, menyalin `skills\<id>\` ke `~/.config/opencode/skills/<id>/`, dan membuat `~/.config/opencode/qa-credentials.local.json` **bila belum ada**. File kredensial lokal itu sengaja di luar repo.
+`setup.ps1` menyalin `agents\*.md` ke `~/.config/opencode/agents/`, menyalin `skills\<id>\` ke `~/.config/opencode/skills/<id>/`, menghapus `qa-engineer.md` lama, dan membuat `~/.config/opencode/qa-credentials.local.json` **bila belum ada**. File kredensial lokal itu sengaja di luar repo.
 
 Verifikasi cepat setelah `opencode reload` (kadang perlu dicek ulang sekali karena API bisa kosong sesaat):
 
 ```
-opencode api get /api/agent     → qa-lead, qa-engineer, bug-hunter, sp-specialist
-opencode api get /api/skill     → qa-e2e-tester, bug-hunter, sp-tracer
+opencode api get /api/agent     → qa-lead, qa-web-engineer, qa-mobile-engineer, bug-hunter, sp-specialist
+opencode api get /api/skill     → qa-e2e-tester, qa-web-e2e, qa-mobile-e2e, bug-hunter, sp-tracer
 ```
 
 ### Dependensi Python
@@ -64,7 +70,7 @@ python -m pip install python-docx pillow pyodbc playwright openpyxl
 python -m playwright install chromium
 ```
 
-Android: emulator MuMu atau perangkat lewat ADB. iOS/IPA **tidak didukung** dan akan dilaporkan `BLOCKED`.
+Android: **AVD resmi Android Studio sebagai default automasi**. MuMu dipakai hanya untuk demo visual lama, perangkat fisik untuk UAT akhir. iOS/IPA **tidak didukung** dan akan dilaporkan `BLOCKED`.
 
 ## Cara kasih kerjaan
 
@@ -76,10 +82,18 @@ Jalankan E2E dan hunt staging ini. Kalau ada notifikasi validasi,
 suruh sp-specialist lacak SP-nya. Gabungkan buktinya ke satu laporan.
 ```
 
+`e2e all` menjalankan web + mobile paralel, lalu lead menggabungkannya jadi **satu** `triage.json` dan **satu** DOCX:
+
+```
+@qa-lead
+e2e all https://staging.contoh.com — sertakan video dari login sampai selesai
+```
+
 Langsung ke spesialis:
 
 ```
-@qa-engineer e2e web https://staging.contoh.com — sertakan video dari login sampai selesai
+@qa-web-engineer e2e web https://staging.contoh.com --watch — sertakan aksesibilitas
+@qa-mobile-engineer e2e mobile — test APK di hasil-test/app.apk, rekam videonya
 @bug-hunt hunt --watch 30 https://staging.contoh.com/
 @sp-specialist cari notifikasi: "Validasi gagal: area wajib diisi"
 ```
@@ -107,24 +121,26 @@ Opsi: `--text` (wajib), `--server`, `--database`, `--windows`, `--limit`, `--out
 
 ## Aturan yang dipegang tim
 
-1. **Satu DOCX final** per laporan. Draft HackerOne/Bugcrowd masuk appendix di dalam DOCX, bukan file `.md` terpisah.
+1. **Satu DOCX final** per laporan, termasuk `e2e all`. Draft HackerOne/Bugcrowd masuk appendix di dalam DOCX, bukan file `.md` terpisah.
 2. **Bab Kesimpulan wajib** di laporan QA maupun bug hunt.
 3. **Temuan sekecil apa pun tidak boleh lolos** — termasuk typo, tooltip salah, dan race condition tombol.
 4. Setiap temuan punya urutan klik/tap eksplisit dan screenshot dengan **lingkaran/border merah + label**, tertanam di DOCX.
-5. Uji sungguhan, bukti sungguhan. Video asli dari login sampai test selesai bila diminta.
+5. Uji sungguhan, bukti sungguhan. Video mobile asli dari login sampai test selesai **tidak dihapus**.
 6. Database **read-only**: hanya `SELECT` / `WITH` / `PRAGMA`, satu statement. DML/DDL/`EXEC` ditolak.
 7. Definisi SP dibaca lewat `SELECT` katalog (`sys.sql_modules` / `sys.objects`). **`EXEC` sengaja tidak didukung** karena isi prosedur bisa mengubah data.
 8. Bug hunt: staging/UAT dulu; dilarang eksploitasi destruktif; **berhenti otomatis** bila ada risiko perubahan permanen pada data produksi.
 9. Hasil `FAIL` / `ERROR` / DB tidak terjangkau dilaporkan apa adanya sebagai temuan atau `BLOCKED` — tidak dibungkus "aman".
 10. Presentasi manajer memakai bahasa profesional (quality & evidence automation). **Dilarang mengarang angka efisiensi.**
+11. Aturan inti ada di `qa-e2e-tester`; skill domain tidak boleh mengubahnya.
 
 ## Artefak yang dihasilkan
 
 | Artefak | Isi |
 |---|---|
 | `*.docx` | Laporan final: ringkasan, risk register, temuan + bukti, Kesimpulan, appendix draft |
-| `*.mp4` | Rekaman asli alur uji bila diminta |
+| `*.mp4` | Rekaman asli alur uji mobile bila diminta |
 | `watch-dashboard.html` | Dashboard live saat `--watch` |
+| `triage.web.json` / `triage.mobile.json` | Temuan per domain saat `e2e all`, digabung lead |
 | `sp-notif-search.json` | Hasil pelacakan notifikasi → SP (path absolut dikembalikan ke lead) |
 | `db-verification.json` | Hasil verifikasi DB read-only bila alur uji menyentuh DB |
 
@@ -141,7 +157,7 @@ opencode reload
 
 ## Catatan penting
 
-- **Nama folder skill adalah ID skill.** Jangan ubah `qa-e2e-tester`, `bug-hunter`, `sp-tracer`.
+- **Nama folder skill adalah ID skill.** Jangan ubah `qa-e2e-tester`, `qa-web-e2e`, `qa-mobile-e2e`, `bug-hunter`, `sp-tracer`.
 - **Setiap `.md` di root `agents/` menjadi agent.** Jangan menaruh `README.md` di folder itu.
 - `sp-tracer` adalah nama folder/skill; repositori lamanya bernama `sp-tracking`.
 - DB belum terjangkau → `sp-specialist` akan menjawab `BLOCKED` dan meminta **nama instance / akses jaringan**, bukan password.

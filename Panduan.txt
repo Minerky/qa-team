@@ -3,12 +3,26 @@ QA TEAM - satu repo untuk agent + skill
 
 Struktur
 --------
-agents\                 4 agent OpenCode (qa-lead, qa-engineer, bug-hunter, sp-specialist)
-skills\qa-e2e-tester\   skill QA E2E
-skills\bug-hunter\      skill bug hunting
-skills\sp-tracer\       skill pelacakan notifikasi ke stored procedure
-qa-credentials.example.json  template koneksi DB (kosong, aman di-commit)
-setup.ps1               menyalin agent & skill ke lokasi yang dibaca OpenCode
+agents\                        5 agent OpenCode
+  qa-lead                      koordinator, primary
+  qa-web-engineer              E2E web (Playwright, watch mode, a11y)
+  qa-mobile-engineer           E2E Android (AVD/ADB, Test Mode, video)
+  bug-hunter                   pentest berotorisasi
+  sp-specialist                notifikasi -> stored procedure
+skills\qa-e2e-tester\          CORE: aturan bersama + generator DOCX
+skills\qa-web-e2e\             protokol eksekusi web
+skills\qa-mobile-e2e\          protokol eksekusi Android
+skills\bug-hunter\             skill bug hunting
+skills\sp-tracer\              skill pelacakan notifikasi ke SP
+qa-credentials.example.json    template koneksi DB (kosong, aman di-commit)
+setup.ps1                      menyalin agent & skill ke lokasi yang dibaca OpenCode
+
+Pemisahan E2E
+-------------
+qa-e2e-tester tetap satu core untuk aturan bersama: intake, kredensial,
+guardrail, format temuan, anotasi merah, verifikasi DB, generator DOCX.
+Protokol teknis dipisah: qa-web-e2e untuk web, qa-mobile-e2e untuk Android.
+Agent qa-engineer lama sudah diganti qa-web-engineer + qa-mobile-engineer.
 
 Pasang di laptop baru (Windows)
 -------------------------------
@@ -20,6 +34,7 @@ Pasang di laptop baru (Windows)
 
 Yang dilakukan setup.ps1:
 - menyalin agents\*.md ke ~/.config/opencode/agents/
+- menghapus qa-engineer.md lama bila masih ada
 - menyalin skills\<id>\ ke ~/.config/opencode/skills/<id>/
 - membuat ~/.config/opencode/qa-credentials.local.json bila belum ada
 
@@ -27,6 +42,9 @@ Dependensi Python
 -----------------
 python -m pip install python-docx pillow pyodbc playwright openpyxl
 python -m playwright install chromium
+
+Android: AVD resmi Android Studio sebagai default automasi. MuMu hanya untuk
+demo visual lama; perangkat fisik untuk UAT akhir. iOS/IPA -> BLOCKED.
 
 Kredensial
 ----------
@@ -36,6 +54,10 @@ File .local.json tidak ikut ke Git.
 
 Aturan penting
 --------------
-- Nama folder skill = ID skill. Jangan mengubah qa-e2e-tester, bug-hunter, sp-tracer.
+- Nama folder skill = ID skill. Jangan mengubah qa-e2e-tester, qa-web-e2e,
+  qa-mobile-e2e, bug-hunter, sp-tracer.
 - File .md di root folder agents = agent. Jangan menaruh README.md di sana.
+- e2e all: web tulis triage.web.json, mobile tulis triage.mobile.json,
+  qa-lead menggabungkan jadi satu triage.json dan satu DOCX.
+- Satu DOCX final, Bab Kesimpulan wajib, temuan sekecil apa pun tidak boleh lolos.
 - Untuk update: git pull, lalu jalankan setup.ps1 lagi.

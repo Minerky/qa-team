@@ -14,8 +14,15 @@ Get-ChildItem (Join-Path $repo 'agents') -Filter *.md | ForEach-Object {
     Copy-Item $_.FullName -Destination (Join-Path $agentsDst $_.Name) -Force
 }
 
+# 1b. Agent lama yang sudah diganti dua spesialis E2E. Hapus hanya nama ini.
+$retiredAgent = Join-Path $agentsDst 'qa-engineer.md'
+if (Test-Path $retiredAgent) {
+    Remove-Item $retiredAgent -Force
+    Write-Host "Dihapus (digantikan): $retiredAgent"
+}
+
 # 2. Skill: nama folder = ID skill, jangan diubah
-foreach ($id in 'qa-e2e-tester', 'bug-hunter', 'sp-tracer') {
+foreach ($id in 'qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'bug-hunter', 'sp-tracer') {
     $src = Join-Path (Join-Path $repo 'skills') $id
     $dst = Join-Path $skillsDst $id
     New-Item -ItemType Directory -Force -Path $dst | Out-Null
