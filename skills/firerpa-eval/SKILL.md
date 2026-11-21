@@ -1,25 +1,27 @@
 ---
 name: firerpa-eval
-description: Referensi evaluasi & training FIRERPA/lamda — pemetaan kapabilitas dari dokumentasi publik, checklist pilot, batas otorisasi MITM/Frida/root, dan kriteria adopsi untuk qa-team. Status DIPELAJARI, BELUM DIINSTALL, BELUM DIPILOTKAN. Tidak menjalankan alat dan tidak mengklaim benchmark. Trigger: evaluasi lamda, training firerpa, bandingkan qa-team dengan firerpa.
+description: Evaluasi & training FIRERPA/lamda — pemetaan kapabilitas dari dokumentasi publik, hasil pilot terbatas di lab, batas otorisasi MITM/Frida/root, dan kriteria adopsi untuk qa-team. Status DIPELAJARI · TERINSTALL DI LAB (v10.12) · PILOT TERBATAS PASS. Tidak mengklaim benchmark. Trigger: evaluasi lamda, training firerpa, bandingkan qa-team dengan firerpa, hasil pilot lamda.
 ---
 
 # Evaluasi referensi FIRERPA / lamda (`firerpa-eval`)
 
-Skill ini **hanya untuk belajar dan menilai**, bukan untuk menjalankan FIRERPA/lamda. Dia menjawab: "apa yang ditawarkan repo itu, apa relevannya untuk PT Wisesa, dan apa yang harus dibuktikan sebelum dipakai?"
+Skill ini untuk **belajar, menilai, dan merangkum pilot terbatas** FIRERPA/lamda — bukan untuk menggantikan alur QA reguler. Dia menjawab: "apa yang ditawarkan repo itu, apa relevannya untuk PT Wisesa, apa yang sudah dibuktikan di lab, dan apa yang harus dibuktikan sebelum dipakai?"
 
 ## 0. Status — baca ini dulu
 
 | Status | Arti |
 |---|---|
 | **DIPELAJARI** | Sumbernya dokumentasi publik GitHub, sudah dibaca dan dipetakan |
-| **BELUM DIINSTALL** | lamda tidak ada di mesin kita; tidak ada biner/layanan yang dijalankan |
-| **BELUM DIPILOTKAN** | Tidak ada skenario uji, tidak ada metrik, tidak ada bukti lokal |
+| **TERINSTALL DI LAB** | Client `lamda 10.12` di venv `~/.config/opencode/firerpa-lab/venv`; server `lamda-server-x86_64 10.12` di emulator MuMu. Kedua artifact diverifikasi SHA-256 terhadap rilis GitHub resmi |
+| **PILOT TERBATAS — PASS** | Koneksi, `server_info`/`device_info`, 85 package, screenshot, buka app UAT, dump hierarchy (31 node), dan WebUI HTTP 200 berhasil. Bukti lokal ada di `~/.config/opencode/firerpa-lab/` |
 
 Konsekuensi:
 
-- **Dilarang** mengklaim "sudah memakai lamda", "sudah menguji", atau memberi angka efisiensi/benchmark. Tidak ada datanya.
-- **Dilarang** menjalankan MITM, Frida, root, device farm, atau fitur lain dari lamda lewat skill ini.
-- Kalau user meminta eksekusi/implementasi, jawab **`BLOCKED`** dan sebut syaratnya: install di mesin laboratorium, scope UAT tertulis, approval, dan pilot yang lulus. **Jangan** mencoba "coba sebentar saja".
+- **Boleh** mengatakan "sudah terpasang di lab" dan "pilot terbatas berhasil", dengan menyebut cakupannya. **Dilarang** mengklaim "sudah dipakai di QA reguler/produksi" atau memberi angka efisiensi/benchmark — tidak ada datanya.
+- Pilot ini **read-only dan non-root**: tidak ada MITM, Frida, proxy, script injection, klik, login, atau perubahan data aplikasi.
+- Eksekusi MITM/Frida/root/device farm tetap **`BLOCKED`** sampai ada approval tertulis formal, scope UAT, backup/rollback, dan pilot lanjutan yang lulus.
+- Penyimpangan yang tercatat: pilot memakai **MuMu**, bukan AVD resmi, karena binary emulator AVD tidak tersedia di mesin ini. Ini **bukan** pengganti kebijakan default `AVD = automation`; untuk adopsi tetap harus diulang di AVD.
+- Layanan FIRERPA default **tanpa autentikasi**. Selama pilot hanya diakses lewat `adb forward tcp:65000 tcp:65000` di localhost. Jangan diekspos ke LAN tanpa sertifikat/auto-auth.
 - Skill ini **tidak mengubah guardrail qa-team**. Aturan di `qa-e2e-tester` tetap menang.
 
 ---
@@ -62,18 +64,20 @@ Semua pernyataan di skill ini bersifat **"menurut dokumentasi publik"**. Tulis p
 
 ---
 
-## 4. Checklist pilot — syarat sebelum adopsi
+## 4. Checklist pilot — hasil 2026-11-21
 
-Jalankan **hanya setelah** item ini lengkap:
+| # | Syarat | Hasil |
+|---|---|---|
+| 1 | Approval + scope target | **Partial** — instruksi langsung user di sesi ini untuk "install, pilotkan", cakupan dibatasi lab non-produksi. Untuk adopsi resmi tetap perlu approval tertulis formal + penanggung jawab |
+| 2 | Install di mesin laboratorium | **Done** — client `lamda 10.12` (SHA-256 `9ca7d3be…0639a`), server `x86_64 10.12` (SHA-256 `aafdf163…85d12`). venv dan artifact di `~/.config/opencode/firerpa-lab/` |
+| 3 | Koneksi ADB terverifikasi | **Done dengan catatan** — `127.0.0.1:16384`, shell non-root, Android 15 `x86_64`. Memakai MuMu karena AVD tidak tersedia; harus diulang di AVD sebelum adopsi |
+| 4 | Skenario pembanding login → Home | **Belum** — baru sebatas buka `com.bhn.advantage.dctmob/.SplashActivity`, dump hierarchy 31 node, dan screenshot. Belum ada perbandingan berpasangan dengan Appium; butuh kredensial uji + scope |
+| 5 | Uji demo remote desktop | **Partial** — WebUI `http://localhost:65000/` merespons HTTP 200 (31 KB HTML). Belum diuji multi-user / rekaman demo bareng manajer |
+| 6 | Uji MITM | **Tidak dilakukan** — sesuai guardrail; butuh consent tertulis, backup/rollback, dan UAT |
+| 7 | Catat hasil apa adanya | **Done** — `pilot-result.json`, `pilot-app-result.json`, `pilot-hierarchy.xml`, dan 2 screenshot asli di folder lab. Tanpa angka rekaan |
+| 8 | Keputusan | **`DIPAKAI SEBAGIAN — PILOT LANJUTAN`** — layak untuk evaluasi selector/screenshot/remote desktop; belum untuk adopsi penuh. Blocker: ulang di AVD, pembandingan Appium, approval formal |
 
-1. **Approval tertulis** + scope target (UAT/staging), daftar akun uji, dan penanggung jawab.
-2. **Install lamda di mesin laboratorium**, catat versi dan konfigurasi. Jangan langsung ke laptop kerja produksi.
-3. **Koneksi ADB terverifikasi** ke AVD resmi (`emulator-5554`) atau perangkat uji — bukan ke perangkat produksi.
-4. **Satu skenario pembanding**: jalankan alur login → Home yang sudah ada di qa-team, lalu ulangi dengan selector/OCR lamda. Bandingkan dengan hasil Appium yang sudah terverifikasi.
-5. **Uji demo**: apakah remote desktop benar-benar terlihat dan bisa dipakai bareng manajer? Rekam buktinya bila ya.
-6. **Uji MITM hanya bila diizinkan**: di UAT, dengan consent tertulis, ada backup/rollback, dan tidak menyentuh data pelanggan sungguhan.
-7. **Catat hasil apa adanya**: yang berhasil, yang gagal, stabilitas, dan biaya. **Tanpa angka rekaan.**
-8. **Keputusan**: `DIPAKAI` / `DIPAKAI SEBAGIAN` / `TIDAK DIPAKAI`, disertai alasan. Kalau pilot tidak bisa dijalankan, status tetap **`BELUM DIPILOTKAN`**.
+Bukti pilot bukan artefak QA dan **tidak boleh** dimasukkan ke `triage.json` atau DOCX E2E.
 
 ---
 
@@ -89,14 +93,16 @@ Jalankan **hanya setelah** item ini lengkap:
 
 ## 6. Guardrail
 
-- Otorisasi tertulis untuk apa pun yang keluar dari membaca dokumentasi.
-- MITM, Frida, root, dan device farm **hanya** setelah pilot + approval; tidak pernah di produksi.
-- Kredensial uji tetap di `qa-credentials.local.json`, tidak di chat.
+- Install dan pilot read-only di lab dilakukan atas instruksi langsung user. **Semua hal di luar itu** (MITM, Frida, root, device farm, produksi) tetap butuh otorisasi tertulis.
+- MITM, Frida, root, dan device farm **hanya** setelah pilot lanjutan + approval; tidak pernah di produksi.
+- Kredensial uji tetap di `qa-credentials.local.json`, tidak di chat. Pilot ini tidak memakai kredensial apa pun.
 - Bila ada risiko perubahan permanen pada data produksi → **berhenti**, laporkan `BLOCKED`.
-- Hasil evaluasi tidak boleh dibungkus sebagai bukti bahwa fitur sudah bekerja.
+- Layanan FIRERPA tidak boleh diekspos tanpa autentikasi/sertifikat. Selama pilot: localhost + `adb forward` saja.
+- Hasil pilot tidak boleh dibungkus sebagai bukti bahwa fitur sudah dipakai di QA reguler atau lebih cepat/lebih baik dari Appium.
 
 ---
 
 ## 7. Riwayat
 
-- 2026-11-21: skill dibuat sebagai referensi evaluasi/training. Status sengaja `DIPELAJARI · BELUM DIINSTALL · BELUM DIPILOTKAN` agar tidak ada klaim berlebih.
+- 2026-11-21: skill dibuat sebagai referensi evaluasi/training. Status awal sengaja `DIPELAJARI · BELUM DIINSTALL · BELUM DIPILOTKAN` agar tidak ada klaim berlebih.
+- 2026-11-21: atas instruksi user, client/server `lamda 10.12` dipasang di lab terpisah (artifact terverifikasi SHA-256). Pilot terbatas non-root di MuMu Android 15: koneksi, info device, 85 package, screenshot, buka app UAT, dump hierarchy 31 node, WebUI HTTP 200 — **PASS**. MITM/Frida/root tidak dijalankan. Status diperbarui menjadi `DIPELAJARI · TERINSTALL DI LAB · PILOT TERBATAS PASS`; adopsi penuh masih menunggu pilot di AVD + pembandingan Appium + approval formal.

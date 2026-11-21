@@ -105,17 +105,17 @@ Mode `--watch` membuka browser Playwright yang terlihat, `watch-dashboard.html`,
 
 ## Evaluasi referensi FIRERPA / lamda
 
-`@qa-lead` memuat skill `firerpa-eval` untuk **training & evaluasi**, bukan untuk menjalankan alat. Isinya: pemetaan kapabilitas dari dokumentasi publik GitHub (`github.com/firerpa/lamda`, MIT), gap analysis terhadap qa-team, dan checklist pilot sebelum adopsi.
+`@qa-lead` memuat skill `firerpa-eval` untuk **training & evaluasi**. Isinya: pemetaan kapabilitas dari dokumentasi publik GitHub (`github.com/firerpa/lamda`, MIT), gap analysis terhadap qa-team, checklist pilot, dan hasil pilot yang sudah dijalankan.
 
-Statusnya sengaja: **DIPELAJARI · BELUM DIINSTALL · BELUM DIPILOTKAN**. Jadi:
+Status terkini: **DIPELAJARI · TERINSTALL DI LAB (v10.12) · PILOT TERBATAS PASS**. Instalasi memakai artifact rilis resmi yang diverifikasi SHA-256; pilot dilakukan di lab terpisah, non-root, tanpa MITM/Frida/proxy/klik/login. Bukti: `~/.config/opencode/firerpa-lab/` (`pilot-result.json`, `pilot-app-result.json`, `pilot-hierarchy.xml`, 2 screenshot asli).
 
 ```
 @qa-lead
-Evaluasi FIRERPA/lamda untuk training tim. Jangan install atau jalankan apa pun —
- baru pemetaan kapabilitas dan checklist pilot.
+Rangkum hasil pilot FIRERPA/lamda untuk training tim —
+ sebutkan cakupan yang sudah diuji dan yang masih BLOCKED.
 ```
 
-Kalau diminta mengimplementasikan MITM/Frida/device farm, lead menjawab `BLOCKED` sampai ada approval tertulis, mesin laboratorium, dan pilot yang lulus. Tidak ada klaim benchmark atau angka efisiensi. Evaluasi ini masuk slide training PPTX, bukan `triage.json` E2E.
+Pilot memakai **MuMu** karena binary AVD tidak tersedia di mesin ini; ini dicatat sebagai penyimpangan, bukan pengganti kebijakan `AVD = automation`. Kalau diminta MITM/Frida/root/device farm atau pemakaian produksi, lead menjawab `BLOCKED` sampai ada approval tertulis formal, pilot ulang di AVD, dan pembandingan dengan Appium. Tidak ada klaim benchmark atau angka efisiensi. Evaluasi ini masuk slide training PPTX, bukan `triage.json` E2E.
 
 ## Kredensial & keamanan
 
@@ -147,7 +147,7 @@ Opsi: `--text` (wajib), `--server`, `--database`, `--windows`, `--limit`, `--out
 9. Hasil `FAIL` / `ERROR` / DB tidak terjangkau dilaporkan apa adanya sebagai temuan atau `BLOCKED` — tidak dibungkus "aman".
 10. Presentasi manajer memakai bahasa profesional (quality & evidence automation). **Dilarang mengarang angka efisiensi.**
 11. Aturan inti ada di `qa-e2e-tester`; skill domain tidak boleh mengubahnya.
-12. `firerpa-eval` **hanya evaluasi referensi**: tidak menjalankan MITM/Frida/root, tidak mengklaim benchmark, dan tidak menggantikan guardrail.
+12. `firerpa-eval` adalah evaluasi + pilot terbatas di lab: tidak menjalankan MITM/Frida/root, tidak mengklaim benchmark, dan tidak menggantikan guardrail. Hasil pilot tidak masuk `triage.json` E2E.
 
 ## Artefak yang dihasilkan
 

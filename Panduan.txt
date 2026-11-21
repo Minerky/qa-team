@@ -27,10 +27,13 @@ Agent qa-engineer lama sudah diganti qa-web-engineer + qa-mobile-engineer.
 
 Evaluasi FIRERPA
 ----------------
-Skill firerpa-eval HANYA referensi/training untuk qa-lead. Status:
-DIPELAJARI, BELUM DIINSTALL, BELUM DIPILOTKAN. Tidak menjalankan MITM,
-Frida, root, atau device farm. Tidak ada klaim benchmark. Eksekusi baru
-boleh setelah approval tertulis + pilot UAT.
+Skill firerpa-eval untuk referensi/training qa-lead. Status:
+DIPELAJARI, TERINSTALL DI LAB v10.12, PILOT TERBATAS PASS.
+Pilot non-root di MuMu Android 15 (AVD tak tersedia): koneksi, info device,
+85 package, screenshot, buka app UAT, dump hierarchy, WebUI HTTP 200.
+Bukti di ~/.config/opencode/firerpa-lab/. Tidak menjalankan MITM, Frida,
+root, atau device farm. Tidak ada klaim benchmark. Pemakaian lanjutan baru
+boleh setelah approval tertulis + pilot ulang di AVD + pembandingan Appium.
 
 Pasang di laptop baru (Windows)
 -------------------------------
