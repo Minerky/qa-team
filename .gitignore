@@ -1,0 +1,26 @@
+# Kredensial & rahasia lokal — jangan pernah ter-commit
+.env
+.env.qa
+qa-credentials.local.json
+*.pfx
+*.pem
+
+# Output hasil uji / laporan (dibuat per target, bukan sumber repo)
+hasil-test-*/
+hasil-hunt-*/
+pendukung/
+*.docx
+*.mp4
+watch-dashboard.html
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editor & OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini

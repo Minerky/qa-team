@@ -22,7 +22,7 @@ Bisa dipakai kapan saja — tidak harus sedang menjalankan E2E atau bug hunt.
 |---|---|
 | Chat, eksplisit | `@sp-tracer` lalu `cari notifikasi: "Validasi gagal: area wajib diisi"` |
 | Chat, otomatis | `trace notif "Validasi gagal: area wajib diisi"` — skill dimuat dari deskripsinya |
-| Terminal | `python C:\Users\Harrys\.config\opencode\skills\sp-tracer\find_notif.py --text "Validasi gagal: area wajib diisi"` |
+| Terminal | `python "%USERPROFILE%\.config\opencode\skills\sp-tracer\find_notif.py" --text "Validasi gagal: area wajib diisi"` |
 
 Opsi `find_notif.py`: `--text` (wajib), `--server`, `--database`, `--windows`, `--limit`, `--out`, `--no-discover`.
 

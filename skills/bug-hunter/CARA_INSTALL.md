@@ -2,6 +2,8 @@
 
 Skill ini adalah **Autonomous Bug Hunter & Vulnerability Assessor** untuk Web dan Android APK yang berjalan langsung di Antigravity / Opencode.
 
+Setup lengkap tim (Python, Playwright, AVD/MuMu, kredensial DB, dan preflight) ada di `PANDUAN-LENGKAP.md` di root repo.
+
 ---
 
 ## 1. Persyaratan Lingkungan

@@ -613,5 +613,5 @@ bughunt https://target.com/
 
 Generator laporan:
 ```bash
-python C:\Users\Harrys\.config\opencode\skills\bug-hunter\build_report.py --root <folder_hasil>
+python "%USERPROFILE%\.config\opencode\skills\bug-hunter\build_report.py" --root <folder_hasil>
 ```

@@ -4,6 +4,8 @@ Satu repo untuk tim QA & security OpenCode: **5 agent + 6 skill**. Clone repo in
 
 Tim ini menghasilkan laporan audit-ready (DOCX) dengan bukti sungguhan — screenshot beranotasi merah, video asli, dan Bab **Kesimpulan** yang wajib ada.
 
+> **Baru clone?** Ikuti [PANDUAN-LENGKAP.md](PANDUAN-LENGKAP.md) — satu panduan untuk Python/Playwright, kredensial & DB, AVD/MuMu/Appium, watch mode, bug hunt, dan generator DOCX. Cek hasil pasang dengan `powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1`.
+
 ## Isi repo
 
 ```
@@ -23,6 +25,9 @@ qa-team/
 │   └── sp-tracer/                   pelacakan SP lewat SELECT katalog
 ├── qa-credentials.example.json      template DB kosong, aman di-commit
 ├── setup.ps1                        installer agent + skill ke ~/.config/opencode
+├── verify_setup.ps1                 preflight: Python, modul, agent, skill, ADB
+├── PANDUAN-LENGKAP.md               panduan clone → pakai (web, mobile, DB, bug hunt)
+├── .gitignore                       menjaga kredensial & output tidak ter-commit
 └── Panduan.txt                      catatan singkat (cadangan README ini)
 ```
 
@@ -47,6 +52,7 @@ git clone https://github.com/Minerky/qa-team.git
 cd qa-team
 powershell -ExecutionPolicy Bypass -File .\setup.ps1
 opencode reload
+powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1
 ```
 
 Lalu di chat OpenCode:
@@ -129,7 +135,7 @@ Pilot memakai **MuMu** karena binary AVD tidak tersedia di mesin ini; ini dicata
 Contoh menjalankan pelacakan langsung lewat terminal:
 
 ```powershell
-python C:\Users\Harrys\.config\opencode\skills\sp-tracer\find_notif.py --text "Validasi gagal: area wajib diisi"
+python "%USERPROFILE%\.config\opencode\skills\sp-tracer\find_notif.py" --text "Validasi gagal: area wajib diisi"
 ```
 
 Opsi: `--text` (wajib), `--server`, `--database`, `--windows`, `--limit`, `--out`, `--no-discover`.
@@ -169,6 +175,7 @@ cd qa-team
 git pull
 powershell -ExecutionPolicy Bypass -File .\setup.ps1
 opencode reload
+powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1
 ```
 
 ## Catatan penting

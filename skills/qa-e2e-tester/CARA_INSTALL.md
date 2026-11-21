@@ -2,6 +2,8 @@
 
 Panduan ini untuk manusia. Instruksi agent ada di `SKILL.md` masing-masing skill.
 
+**Panduan paling lengkap ada di `PANDUAN-LENGKAP.md` di root repo** (clone → pakai, mencakup DB, web, mobile, dan bug hunt). File ini hanya ringkasan.
+
 ## 1. Struktur baru (sejak 2026-11-21)
 
 ```
@@ -22,14 +24,17 @@ powershell -ExecutionPolicy Bypass -File .\setup.ps1
 opencode reload
 ```
 
-`setup.ps1` menyalin semua agent dan kelima skill ke `~/.config/opencode/`, menghapus `qa-engineer.md` lama, dan membuat `~/.config/opencode/qa-credentials.local.json` bila belum ada. Jangan mengisi password di `qa-credentials.example.json` — template itu aman di-commit.
+`setup.ps1` menyalin semua agent dan keenam skill ke `~/.config/opencode/`, menghapus `qa-engineer.md` lama, dan membuat `~/.config/opencode/qa-credentials.local.json` bila belum ada. Jangan mengisi password di `qa-credentials.example.json` — template itu aman di-commit.
 
 Verifikasi:
 
-```
+```powershell
+powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1
 opencode api get /api/agent     → 5 agent
-opencode api get /api/skill     → 5 skill
+opencode api get /api/skill     → 6 skill
 ```
+
+Jalankan `opencode api ...` dari folder workspace, bukan dari dalam repo `qa-team`.
 
 ## 3. Dependensi
 

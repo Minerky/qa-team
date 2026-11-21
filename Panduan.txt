@@ -1,6 +1,9 @@
 QA TEAM - satu repo untuk agent + skill
 =======================================
 
+Panduan lengkap clone -> pakai (web, mobile, DB, bug hunt):
+PANDUAN-LENGKAP.md. Preflight otomatis: verify_setup.ps1.
+
 Struktur
 --------
 agents\                        5 agent OpenCode
@@ -17,6 +20,9 @@ skills\bug-hunter\             skill bug hunting
 skills\sp-tracer\              skill pelacakan notifikasi ke SP
 qa-credentials.example.json    template koneksi DB (kosong, aman di-commit)
 setup.ps1                      menyalin agent & skill ke lokasi yang dibaca OpenCode
+verify_setup.ps1               preflight Python, modul, agent, skill, ADB
+PANDUAN-LENGKAP.md             panduan lengkap clone -> pakai
+.gitignore                     menjaga kredensial & output tidak ter-commit
 
 Pemisahan E2E
 -------------
@@ -41,7 +47,8 @@ Pasang di laptop baru (Windows)
 2. cd qa-team
 3. powershell -ExecutionPolicy Bypass -File .\setup.ps1
 4. opencode reload
-5. Di chat: @qa-lead
+5. powershell -ExecutionPolicy Bypass -File .\verify_setup.ps1
+6. Di chat: @qa-lead
 
 Yang dilakukan setup.ps1:
 - menyalin agents\*.md ke ~/.config/opencode/agents/
