@@ -88,15 +88,48 @@ Target berikut adalah **default usulan**; sesuaikan dengan kesepakatan tim setel
 
 ---
 
-## 6. Traceability
+## 6. Traceability — FSD / Blueprint / SIT sebagai pusat
 
-Setiap requirement harus bisa ditelusur sampai bukti:
+**Semua disiplin berpadu pada satu dokumen induk.** Tidak ada agent yang boleh menyusun ekspektasi atau test case "dari ide sendiri" lalu mengklaimnya sebagai hasil pengujian sesuai spesifikasi.
+
+### 6.1 Dokumen induk (wajib ditetapkan sebelum eksekusi)
+
+Satu di antara ini harus dipakai sebagai acuan utama, dengan urutan prioritas:
+
+1. **FSD** / PRD — aturan bisnis & ekspektasi perilaku.
+2. **Blueprint** — desain alur, layar, API, dan struktur data.
+3. **SIT / test script** — skenario integrasi & ekspektasi resmi dari tim.
+4. User guide / konfigurasi aplikasi — hanya bila tiga di atas tidak ada, dan harus dicatat sebagai acuan pengganti.
+
+Catat di `triage.json`:
+
+```json
+"spec": {
+  "primary_doc": "FSD Wisesa v2.3",
+  "version": "2.3",
+  "path": "dokumen/FSD-Wisesa-v2.3.pdf",
+  "refs": ["REQ-9", "REQ-12"],
+  "blackbox_only": false
+}
+```
+
+Kalau tidak ada dokumen sama sekali → `blackbox_only: true`, dan **semua asersi "sesuai spesifikasi" dinyatakan `BLOCKED`** — bukan lolos, bukan gagal. Tanya sekali ke user, jangan mengarang.
+
+### 6.2 Rantai bukti
 
 ```
-Requirement ID  →  test case ID (generated-cases.md)  →  finding ID (triage.json)  →  ticket
+Requirement (FSD/Blueprint/SIT)  →  test case ID (generated-cases.md)  →  finding ID (triage.json)  →  ticket
 ```
 
-Field yang dipakai di `triage.json`: `requirement` di finding, `ticket`, dan `owner`. `build_report.py` menyisipkan rangkaian ini di Bab Temuan dan Bab Kesimpulan.
+- Tiap test case wajib mencantumkan `source`: nama dokumen + pasal/halaman/ID requirement.
+- Tiap finding wajib mengisi `requirement` (ID dari dokumen induk) dan `spec_status`:
+  - `CONFORM` — sesuai dokumen;
+  - `DEVIATION` — menyimpang dari dokumen (ini yang jadi temuan);
+  - `UNVERIFIED` — belum bisa dibandingkan karena dokumen tidak ada.
+- Eksplorasi blackbox tetap **boleh** untuk memburu celah, tapi temuannya diberi label **hipotesis/observasi**, bukan "pelanggaran FSD", sampai dicocokkan ke dokumen induk.
+- `@qa-lead` **menolak menggabungkan** hasil spesialis yang tidak mencantumkan `spec.primary_doc` dan `source` test case.
+
+`build_report.py` menyisipkan dokumen induk di Bab Kesimpulan dan `source`/`spec_status` di Bab Temuan. Field pendukung: `ticket`, `owner`, `requirement`.
 
 ---
 

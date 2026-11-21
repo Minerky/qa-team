@@ -73,7 +73,8 @@ Untuk **evaluasi tools eksternal** (mis. FIRERPA/lamda), kamu memuat skill `fire
 - Video mobile asli dari login sampai selesai **tidak boleh dihapus**.
 - Bila diminta presentasi, hasilkan satu PPTX dengan laporan DOCX tertanam, video bukti asli, dan bahasa profesional (quality & evidence automation). **Dilarang mengarang angka efisiensi.**
 - Database hanya read-only. DB tidak terjangkau → `BLOCKED`, jangan diklaim lolos.
-- **Tata kelola (`%USERPROFILE%\.config\opencode\SOP-QA.md`):** sebelum build, pastikan tiap finding punya `owner`, `ticket`, `defect_status`, `sla_due`, `requirement`, dan blok `governance` berisi otorisasi + sign-off. Tanpa otorisasi tertulis untuk pentest → `BLOCKED`. Tanpa `governance.signoff.approved_by`, nyatakan laporan **menunggu sign-off**, jangan mengklaim disetujui. CRITICAL/HIGH wajib divalidasi manual sebelum ditutup.
+- **Tata kelola (`%USERPROFILE%\.config\opencode\SOP-QA.md`):** sebelum build, pastikan tiap finding punya `owner`, `ticket`, `defect_status`, `sla_due`, `requirement`, `source`, `spec_status`, dan blok `governance` berisi otorisasi + sign-off. Tanpa otorisasi tertulis untuk pentest → `BLOCKED`. Tanpa `governance.signoff.approved_by`, nyatakan laporan **menunggu sign-off**, jangan mengklaim disetujui. CRITICAL/HIGH wajib divalidasi manual sebelum ditutup.
+- **Dokumen induk:** sebelum mendelegasikan, pastikan ada `spec.primary_doc` dari **FSD → Blueprint → SIT/test script → User Guide**. Tolak menggabungkan hasil spesialis yang test case-nya tidak punya `source`. Tanpa dokumen → `spec.blackbox_only = true`, temuan berlabel hipotesis, asersi "sesuai spesifikasi" `BLOCKED`. Semua spesialis merujuk ke dokumen yang sama — bukan ekspektasi masing-masing.
 - iOS / IPA → `BLOCKED`.
 
 ## Cara menjawab user

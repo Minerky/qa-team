@@ -46,7 +46,7 @@ Alias yang dikenali: `e2e web`, `e2e mobile`, `jalankan E2E web/mobile`, `run mo
 | `QA_USER` / `QA_PASS` / `QA_TEST_MODE_PIN` / OTP test | file lokal `.env.qa` atau `qa-credentials.local.json` di workspace → jangan diminta di chat. **Semua nilai yang tersedia di artefak ditampilkan apa adanya di laporan internal**; nilai yang tidak ada ditulis `(...)` — tanpa marker `[REDACTED]` |
 | serial ADB | AVD `emulator-5554` → `mumu-cli info` → `adb devices`, bukan hardcode |
 | package / APK | argumen → APK di workspace → `pm list packages` / `dumpsys` |
-| test case & ekspektasi | dokumen pendukung → generate case otomatis |
+| test case & ekspektasi | **FSD → Blueprint → SIT/test script → User Guide** (berurutan) → generate case otomatis. Dilarang mengarang ekspektasi tanpa sumber; kalau tidak ada, tanya sekali lalu tandai `spec.blackbox_only = true` |
 
 **Gate sebelum eksekusi:** target & akun uji berhasil di-resolve; environment UAT/staging (atau ada approval tertulis); data uji bisa di-reset. Kredensial tidak diminta di chat dan tidak ditulis ke log runtime; di laporan internal ditampilkan sesuai aturan tunggal di bawah. RoE dicatat dari dokumen; kalau approval tidak ada, **tanya sekali** sebelum aksi yang mengubah state — jangan mengarang dan jangan berhenti dengan formulir panjang.
 
@@ -100,7 +100,7 @@ Detail teknis per platform ada di `qa-web-e2e` dan `qa-mobile-e2e`.
 | **Mode 1: Script + FSD/PRD + URL** | Spesifikasi + test script + URL | Eksekusi script, validasi terhadap FSD, tambah negative case, laporkan hasil |
 | **Mode 2: Spec-Driven** | FSD/PRD/User Guide + URL | Bedah aturan bisnis, susun matrix happy/negative, eksekusi, gap analysis |
 | **Mode 3: Whitebox** | Source code + URL | Analisis arsitektur, state, endpoint, validasi form, eksekusi live |
-| **Mode 4: Pure Blackbox** | Hanya URL | Eksplorasi UI/UX mandiri, identifikasi role/form/tombol/validasi |
+| **Mode 4: Pure Blackbox** | Hanya URL | Eksplorasi UI/UX untuk **memburu celah**, bukan untuk menyatakan "sesuai spesifikasi". Temuan diberi label hipotesis/observasi sampai dicocokkan ke FSD/Blueprint/SIT; asersi spesifikasi → `BLOCKED` |
 | **Mode 5: Mobile Binary** | APK + akun uji (± source) | Instal, Test Mode, eksplorasi UI, statis + dinamis, pentest mobile |
 | **Mode 6: Network Scope** | IP/host/CIDR + izin tertulis | Mapping port/layanan, review TLS, risk scoring jaringan |
 
@@ -205,7 +205,9 @@ Field minimal tiap entri: `id`, `title`, `category` (`Functional Bug` / `Securit
 
 ### 4.2 Tata kelola temuan (SOP-QA.md)
 
-Setiap temuan **wajib** mengisi juga field tindak lanjut: `owner`, `ticket`, `defect_status` (`OPEN`/`ASSIGNED`/`IN_PROGRESS`/`FIXED`/`RETEST_PASS`/`REOPEN`/`CLOSED`/`BLOCKED`), `sla_due` (tanggal), `requirement` (ID requirement), dan `retest_of` bila ini hasil uji ulang. Nilai tidak ada → `(...)`; jangan dikosongkan. `report_kit.py` menampilkan field ini di Bab Temuan, Risk Register, dan Bab Kesimpulan.
+Setiap temuan **wajib** mengisi juga field tindak lanjut: `owner`, `ticket`, `defect_status` (`OPEN`/`ASSIGNED`/`IN_PROGRESS`/`FIXED`/`RETEST_PASS`/`REOPEN`/`CLOSED`/`BLOCKED`), `sla_due` (tanggal), `requirement` (ID dari FSD/Blueprint/SIT), `source` (nama dokumen + pasal/halaman), `spec_status` (`CONFORM`/`DEVIATION`/`UNVERIFIED`), dan `retest_of` bila ini hasil uji ulang. Nilai tidak ada → `(...)`; jangan dikosongkan. `report_kit.py` menampilkan field ini di Bab Temuan, Risk Register, dan Bab Kesimpulan.
+
+**Dokumen induk wajib.** Isi blok root `spec` (`primary_doc`, `version`, `path`, `refs[]`, `blackbox_only`) sebelum eksekusi. Prioritas acuan: **FSD → Blueprint → SIT/test script → User Guide**. Test case dan ekspektasi harus bersumber dari sana; dilarang mengarang ekspektasi lalu mengklaim "sesuai spesifikasi". Tanpa dokumen → `blackbox_only: true`, temuan berlabel hipotesis/observasi, asersi spesifikasi `BLOCKED`. `@qa-lead` menolak menggabungkan hasil yang tanpa `spec.primary_doc`.
 
 Blok `governance` di root `triage.json` berisi `authorization` (`ref`, `scope`, `approved_by`, `date`, `valid_until`), `signoff` (`decision`, `approved_by`, `date`), `sla` (opsional; default dari SOP), dan `notes[]`. Tanpa otorisasi tertulis untuk pentest → `BLOCKED`. Tanpa `signoff.approved_by` → laporan dibaca sebagai **menunggu sign-off**, bukan disetujui. Sumber aturan: `%USERPROFILE%\.config\opencode\SOP-QA.md` (hasil install) atau `SOP-QA.md` di repo. Template otorisasi: `%USERPROFILE%\.config\opencode\templates\authorization.md`.
 
@@ -214,6 +216,16 @@ Blok `governance` di root `triage.json` berisi `authorization` (`ref`, `scope`, 
   "authorization": {"ref": "AUTH-2026-014", "scope": "staging /api/*", "approved_by": "(...)", "date": "(...)", "valid_until": "(...)"},
   "signoff": {"decision": "perbaikan wajib sebelum rilis", "approved_by": "(...)", "date": "(...)"},
   "notes": []
+}
+```
+
+```json
+"spec": {
+  "primary_doc": "FSD Wisesa v2.3",
+  "version": "2.3",
+  "path": "dokumen/FSD-Wisesa-v2.3.pdf",
+  "refs": ["REQ-9", "REQ-12"],
+  "blackbox_only": false
 }
 ```
 

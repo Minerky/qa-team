@@ -226,6 +226,8 @@ def norm_findings(triage):
             'defect_status': f.get('defect_status') or '-',
             'sla_due': f.get('sla_due') or '-',
             'requirement': f.get('requirement') or f.get('requirement_id') or '-',
+            'source': f.get('source') or '-',
+            'spec_status': f.get('spec_status') or '-',
             'retest_of': f.get('retest_of') or '-',
             'shots': shots,
         })
@@ -929,7 +931,8 @@ class Report:
             self.P('Rekomendasi Remediasi: ' + str(f['recommendation']))
             track = (f"Tindak lanjut: Owner={f['owner']}; Tiket={f['ticket']}; "
                      f"Status defect={f['defect_status']}; SLA={f['sla_due']}; "
-                     f"Requirement={f['requirement']}")
+                     f"Requirement={f['requirement']}; Sumber={f['source']}; "
+                     f"Status spesifikasi={f['spec_status']}")
             if f['retest_of'] != '-':
                 track += f"; Uji ulang dari={f['retest_of']}"
             self.P(track, italic=True)
@@ -1085,6 +1088,19 @@ class Report:
         else:
             self.P('Data otorisasi/sign-off belum diisi di `governance` — baca sebagai menunggu sign-off.',
                    italic=True)
+
+        spec = self.triage.get('spec', {}) or {}
+        if spec:
+            self.H('Dokumen Induk (FSD / Blueprint / SIT)', 3)
+            rows_s = [
+                ['Dokumen', str(spec.get('primary_doc', '-'))],
+                ['Versi', str(spec.get('version', '-'))],
+                ['Lokasi', str(spec.get('path', '-'))],
+                ['Referensi', ', '.join(map(str, spec.get('refs') or [])) or '-'],
+                ['Mode', 'Blackbox saja — asersi spesifikasi `BLOCKED`'
+                 if spec.get('blackbox_only') else 'Berbasis dokumen induk'],
+            ]
+            self.table(['Aspek', 'Nilai'], rows_s, widths=[2.1, 4.5])
 
         if self._findings:
             self.H('Status Tindak Lanjut Temuan', 3)
