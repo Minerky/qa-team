@@ -24,7 +24,7 @@ Skill ini adalah **kulit aturan**, bukan protokol eksekusi. Isinya berlaku untuk
 - **Bab Kesimpulan & Rekomendasi Akhir wajib** ada.
 - **Temuan sekecil apa pun tidak boleh lolos dari report** — INFO/LOW/cosmetic/typo tetap lengkap.
 
-> Instalasi di laptop baru ada di `CARA_INSTALL.md` dan `README.md` repo `qa-team` — dibaca manusia, bukan instruksi agent.
+> Instalasi di laptop baru ada di `PANDUAN-LENGKAP.md` dan `README.md` repo `qa-team` — dibaca manusia, bukan instruksi agent.
 
 ---
 

@@ -66,6 +66,7 @@ opencode reload
 
 - menyalin `agents\*.md` ke `%USERPROFILE%\.config\opencode\agents\`
 - menyalin keenam folder skill ke `%USERPROFILE%\.config\opencode\skills\`
+- menyalin skrip bersama (`build_report.py`, `db_verify.py`, `find_notif.py`, `qa-credentials.example.json`) dari satu salinan di repo ke folder skill yang memakainya — di repo skrip itu **tidak** diduplikasi
 - menghapus agent lama `qa-engineer.md` bila masih ada
 - membuat `%USERPROFILE%\.config\opencode\qa-credentials.local.json` **hanya bila belum ada**
 

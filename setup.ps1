@@ -22,6 +22,14 @@ if (Test-Path $retiredAgent) {
 }
 
 # 2. Skill: nama folder = ID skill, jangan diubah
+# Skrip yang dipakai bersama disimpan SATU kali di repo:
+#   - skills/qa-e2e-tester/  -> build_report.py, db_verify.py, find_notif.py
+#   - root repo              -> qa-credentials.example.json
+# Di sini skrip itu disalin ke folder skill pemakainya karena SKILL.md
+# memanggilnya dengan nama relatif di dalam folder skill itu sendiri.
+$core = Join-Path (Join-Path $repo 'skills') 'qa-e2e-tester'
+$credTemplate = Join-Path $repo 'qa-credentials.example.json'
+
 foreach ($id in 'qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'firerpa-eval', 'bug-hunter', 'sp-tracer') {
     $src = Join-Path (Join-Path $repo 'skills') $id
     $dst = Join-Path $skillsDst $id
@@ -29,6 +37,23 @@ foreach ($id in 'qa-e2e-tester', 'qa-web-e2e', 'qa-mobile-e2e', 'firerpa-eval', 
     Get-ChildItem $src -Force |
         Where-Object { $_.Name -notin '.git', '__pycache__' } |
         Copy-Item -Destination $dst -Recurse -Force
+
+    # Salinan lama dari file yang sudah dihapus di repo - buang dari instalasi.
+    foreach ($retired in 'CARA_INSTALL.md', '.gitignore') {
+        $old = Join-Path $dst $retired
+        if (Test-Path $old) { Remove-Item $old -Force }
+    }
+
+    $fromCore = @()
+    if ($id -eq 'bug-hunter') { $fromCore = @('build_report.py', 'db_verify.py', 'find_notif.py') }
+    elseif ($id -eq 'sp-tracer') { $fromCore = @('db_verify.py', 'find_notif.py') }
+    foreach ($f in $fromCore) {
+        Copy-Item (Join-Path $core $f) -Destination (Join-Path $dst $f) -Force
+    }
+
+    if ($id -in 'qa-e2e-tester', 'bug-hunter', 'sp-tracer') {
+        Copy-Item $credTemplate -Destination (Join-Path $dst 'qa-credentials.example.json') -Force
+    }
 }
 
 # 3. Template kredensial (hanya dibuat bila belum ada)

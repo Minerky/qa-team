@@ -23,13 +23,14 @@ qa-team/
 │   ├── firerpa-eval/                referensi evaluasi/training FIRERPA lamda
 │   ├── bug-hunter/                  WAF/API/mobile testing, CVSS, kill chain
 │   └── sp-tracer/                   pelacakan SP lewat SELECT katalog
-├── qa-credentials.example.json      template DB kosong, aman di-commit
+├── qa-credentials.example.json      template DB kosong, aman di-commit (satu-satunya)
 ├── setup.ps1                        installer agent + skill ke ~/.config/opencode
 ├── verify_setup.ps1                 preflight: Python, modul, agent, skill, ADB
 ├── PANDUAN-LENGKAP.md               panduan clone → pakai (web, mobile, DB, bug hunt)
-├── .gitignore                       menjaga kredensial & output tidak ter-commit
-└── Panduan.txt                      catatan singkat (cadangan README ini)
+└── .gitignore                       menjaga kredensial & output tidak ter-commit
 ```
+
+Skrip yang sama tidak disimpan berulang: `build_report.py`, `db_verify.py`, dan `find_notif.py` hanya satu salinan di `skills/qa-e2e-tester/`. `setup.ps1` yang menyalinnya ke folder skill `bug-hunter` dan `sp-tracer` saat instalasi, karena tiap skill memanggil skrip dengan nama relatif di foldernya sendiri. `report_kit.py` sengaja tetap dua versi — implementasi bug-hunter bukan substitusi CORE.
 
 Pemisahan E2E: **`qa-e2e-tester` tetap satu core** untuk aturan bersama (intake, kredensial, guardrail, format temuan, anotasi merah, verifikasi DB, generator DOCX). Protokol teknisnya dipisah menjadi `qa-web-e2e` dan `qa-mobile-e2e`. Dengan begitu, aturan tidak diduplikasi dan tidak bisa beda antar platform.
 

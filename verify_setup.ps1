@@ -71,6 +71,23 @@ foreach ($s in $expectedSkills) {
 }
 if ($skillsOk -eq $expectedSkills.Count) { Show-Line '[OK]' 'skill' "$skillsOk/$($expectedSkills.Count) terpasang" }
 
+# 6b. Skrip bersama hasil salinan setup.ps1 (repo menyimpan satu salinan saja)
+$scriptMap = [ordered]@{
+    'qa-e2e-tester' = @('build_report.py', 'report_kit.py', 'db_verify.py', 'find_notif.py', 'qa-credentials.example.json')
+    'bug-hunter'    = @('build_report.py', 'report_kit.py', 'db_verify.py', 'find_notif.py', 'qa-credentials.example.json')
+    'sp-tracer'     = @('db_verify.py', 'find_notif.py', 'qa-credentials.example.json')
+}
+$scriptOk = 0
+$scriptTotal = 0
+foreach ($s in $scriptMap.Keys) {
+    foreach ($f in $scriptMap[$s]) {
+        $scriptTotal++
+        if (Test-Path (Join-Path $oc "skills\$s\$f")) { $scriptOk++ }
+        else { Show-Line '[WARN]' "skill $s / $f" 'belum ada - jalankan setup.ps1 ulang' }
+    }
+}
+if ($scriptOk -eq $scriptTotal) { Show-Line '[OK]' 'skrip skill' "$scriptOk/$scriptTotal tersedia" }
+
 # 7. File kredensial lokal (isi TIDAK dibaca)
 $cred = Join-Path $oc 'qa-credentials.local.json'
 if (Test-Path $cred) { Show-Line '[OK]' 'qa-credentials.local.json' 'ada (isi tidak dicek)' }

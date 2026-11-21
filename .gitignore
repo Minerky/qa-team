@@ -22,5 +22,6 @@ venv/
 # Editor & OS
 .vscode/
 .idea/
+.playwright-mcp/
 Thumbs.db
 desktop.ini
