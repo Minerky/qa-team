@@ -20,22 +20,26 @@ Dokumen ini mengatur **orang, proses, dan kewenangan** di sekitar tooling QA. At
 
 ## 2. Struktur & RACI
 
-| Kegiatan | QA Manager | QA Lead | Web/Mobile Engineer | Bug Hunter | SP Specialist | Product/Owner | Eng/Dev |
-|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| Menetapkan scope & otorisasi | **A** | R | C | C | C | **R** | I |
-| Menyusun test plan & case | I | **A/R** | R | C | C | C | I |
-| Eksekusi E2E web/mobile | I | A | **R** | I | I | I | I |
-| Eksekusi pentest | I | A | C | **R** | C | I | I |
-| Pelacakan notifikasi → SP | I | C | I | I | **A/R** | I | C |
-| Validasi manual CRITICAL/HIGH | **A** | R | C | R | I | C | C |
-| Triage & prioritas temuan | I | **A/R** | R | R | C | C | C |
-| Perbaikan & retest | I | C | R | R | I | I | **A/R** |
-| Sign-off rilis | **A/R** | C | I | I | I | **C** | I |
-| Retensi & akses bukti | **A** | R | I | I | I | C | I |
+| Kegiatan | QA Manager | QA Lead | Web/Mobile Engineer | Bug Hunter | SP Specialist | QA Ops | SDET | Product/Owner (eksternal) | Eng/Dev (eksternal) |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| Menetapkan scope & otorisasi | **A** | R | C | C | C | C | C | **R** | I |
+| Menyusun test plan & case | I | **A/R** | R | C | C | C | R | C | I |
+| Eksekusi E2E web/mobile | I | A | **R** | I | I | C | R | I | I |
+| Eksekusi pentest | I | A | C | **R** | C | C | C | I | I |
+| Pelacakan notifikasi → SP | I | C | I | I | **A/R** | R | I | I | C |
+| Validasi manual CRITICAL/HIGH | **A** | R | C | R | I | I | I | C | C |
+| Triage & prioritas temuan | I | **A/R** | R | R | C | I | C | C | C |
+| Perbaikan (eksternal) & retest (QA) | I | **A/R** | R | R | I | C | R | I | R |
+| Sign-off rilis | **A/R** | C | I | I | I | I | I | C | I |
+| Retensi & akses bukti | **A** | R | I | I | I | R | C | I | I |
+| Menjaga env & data uji (DoR) | I | C | I | I | I | **A/R** | C | I | I |
+| Memelihara harness otomasi | I | C | C | I | I | C | **A/R** | I | I |
 
 `R` = pelaksana · `A` = akuntabel (satu pemilik) · `C` = dikonsultasi · `I` = diberi tahu.
 
-**Pemilik saat ini:** QA Manager `(...)` · QA Lead `(...)` · Web `(...)` · Mobile `(...)` · Security `(...)` · DB/SP `(...)`. Isi sebelum dipakai; kosong = `BLOCKED` untuk sign-off.
+**Product/Owner dan Eng/Dev adalah pihak eksternal** — bukan karyawan QA. Kolom keduanya tetap ada di RACI karena laporan wajib mencatat siapa yang dikonsultasi/diberi tahu, bukan karena mereka bagian dari struktur tim. QA Manager boleh merangkap sebagai penandatangan otorisasi pentest.
+
+**Pemilik saat ini:** QA Manager `(...)` · QA Lead `(...)` · Web `(...)` · Mobile `(...)` · Security `(...)` · DB/SP `(...)` · QA Ops `(...)` · SDET `(...)`. Isi sebelum dipakai; kosong = `BLOCKED` untuk sign-off.
 
 ---
 
